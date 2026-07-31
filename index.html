@@ -21,7 +21,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: "Helvetica Neue", Arial, sans-serif;
-            font-size: 16px; /* スマホで見やすいように基準サイズを16pxに設定 */
+            font-size: 16px;
             margin: 0;
             padding: 15px;
             background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
@@ -120,7 +120,7 @@
             border-radius: 8px;
             background-color: #fffdf9;
             box-sizing: border-box;
-            font-size: 1rem; /* スマホでフォーム入力時にズームインしないよう16px相当を確保 */
+            font-size: 1rem;
             color: var(--text-color);
         }
 
@@ -1025,13 +1025,12 @@
                 let mode = confirm('既存の顧客データに「追加（マージ）」しますか？\n\n[OK] = 追加する\n[キャンセル] = 既存データをすべて上書きして置き換える');
                 
                 if (mode) {
-                    // 追加（IDが被っていなければ追加、被っていれば更新）
                     let addedCount = 0;
                     importedCustomers.forEach(imp => {
                         if (!imp.id) imp.id = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                         let idx = customers.findIndex(c => c.id === imp.id || (c.name && c.name === imp.name && c.email && c.email === imp.email));
                         if (idx !== -1) {
-                            customers[idx] = imp; // 既存なら上書き更新
+                            customers[idx] = imp;
                         } else {
                             customers.push(imp);
                             addedCount++;
@@ -1039,7 +1038,6 @@
                     });
                     alert(`顧客マスタを統合しました！（新規追加: ${addedCount}件）`);
                 } else {
-                    // 完全置き換え
                     customers = importedCustomers.map(c => {
                         if (!c.id) c.id = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                         return c;
@@ -1059,7 +1057,8 @@
     // 全体データののエクスポート
     function exportData() {
         if (seminars.length === 0 && customers.length === 0) { alert('エクスポートするデータがありません。'); return; }
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ seminars, customers }, null, 2));
+        const exportObj = { seminars: seminars, customers: customers };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
         downloadAnchor.setAttribute("download", `seminar_app_data_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.json`);
@@ -1068,7 +1067,7 @@
         downloadAnchor.remove();
     }
 
-    // 全体データのインポート
+    // 全体データのインポート（修正済）
     function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1077,14 +1076,20 @@
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (confirm('現在の全体データに上書きしますか？')) {
-                    seminars = importedData.seminars || (Array.isArray(importedData) ? importedData : []);
-                    customers = importedData.customers || [];
+                    // オブジェクト形式、配列形式どちらのJSONでも安全に取得する
+                    if (Array.isArray(importedData)) {
+                        seminars = importedData;
+                        customers = [];
+                    } else {
+                        seminars = importedData.seminars || [];
+                        customers = importedData.customers || [];
+                    }
                     migrateOldData();
                     saveAndRefresh();
                     alert('データを正常にインポートしました！');
                 }
             } catch (error) {
-                alert('JSONファイルの読み込みに失敗しました。');
+                alert('JSONファイルの読み込みに失敗しました。ファイル形式をご確認ください。');
             }
             event.target.value = '';
         };
