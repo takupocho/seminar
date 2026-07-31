@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>セミナー＆参加者ノート</title>
     <style>
         :root {
@@ -14,15 +15,15 @@
             --border-color: #e3dec3;
             --delete-color: #e8a5a5;
             --export-color: #93b5c6;
-            --customer-btn-color: #d4a5a5;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: "Helvetica Neue", Arial, sans-serif;
+            font-size: 16px; /* スマホで見やすいように基準サイズを16pxに設定 */
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
             background-size: 20px 20px;
         }
@@ -34,10 +35,10 @@
 
         h1 {
             text-align: center;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #7c6f59;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
             border-bottom: 2px dashed var(--secondary-color);
             padding-bottom: 10px;
         }
@@ -46,8 +47,8 @@
             background-color: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
+            padding: 18px;
+            margin-bottom: 20px;
             box-shadow: 4px 4px 0px var(--border-color);
         }
 
@@ -65,14 +66,13 @@
         }
 
         h2 {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-top: 0;
             color: var(--secondary-color);
             border-left: 5px solid var(--accent-color);
             padding-left: 10px;
         }
 
-        /* 開閉用の見出しスタイル */
         .collapsible-header {
             cursor: pointer;
             display: flex;
@@ -86,11 +86,10 @@
         }
 
         .toggle-icon {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--secondary-color);
         }
 
-        /* フォームの開閉エリア */
         .form-body {
             display: none;
             margin-top: 15px;
@@ -104,36 +103,37 @@
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
             font-weight: bold;
         }
 
         input[type="text"],
         input[type="date"],
         input[type="email"],
+        input[type="number"],
         select,
         textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: #fffdf9;
             box-sizing: border-box;
-            font-size: 1rem;
+            font-size: 1rem; /* スマホでフォーム入力時にズームインしないよう16px相当を確保 */
             color: var(--text-color);
         }
 
         textarea {
             resize: vertical;
-            height: 80px;
+            height: 90px;
         }
 
         button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 20px;
             font-size: 1rem;
             cursor: pointer;
@@ -147,11 +147,12 @@
         }
 
         .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            font-size: 0.85rem;
             border-radius: 10px;
             box-shadow: 1px 1px 0px rgba(0,0,0,0.2);
-            margin-left: 5px;
+            margin-left: 4px;
+            margin-bottom: 4px;
         }
 
         .btn-edit {
@@ -160,12 +161,6 @@
 
         .btn-delete {
             background-color: var(--delete-color);
-        }
-
-        .btn-customer-add {
-            background-color: #d4a574;
-            box-shadow: 1px 1px 0px #a67c4f;
-            display: none; /* 編集時のみ表示 */
         }
 
         .btn-export {
@@ -195,41 +190,65 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             margin-bottom: 10px;
+            font-size: 0.95rem;
         }
 
         .participant-list {
             margin-top: 10px;
             padding-left: 0;
-            font-size: 0.9rem;
+            font-size: 0.95rem; /* リスト内の文字サイズも拡大 */
         }
 
         .participant-item {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             background: #f7f5ee;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            gap: 10px;
         }
 
         .customer-item {
             background: #f7f5ee;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .customer-item-top {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .customer-history-box {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.88rem;
+            color: #666;
+        }
+
+        .history-tag {
+            display: inline-block;
+            background: #fff;
             border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 3px 4px 3px 0;
+            color: #5c5346;
         }
 
         .tag {
             display: inline-block;
-            padding: 2px 8px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            font-size: 0.85rem;
             border-radius: 4px;
             background: var(--accent-color);
             color: white;
@@ -247,20 +266,42 @@
             gap: 15px;
             align-items: center;
             justify-content: space-between;
-        }
-
-        .import-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            font-size: 0.95rem;
         }
 
         .row-inputs {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
         .row-inputs > div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .birthdate-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .birthdate-mode-switch {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+            text-align: right;
+            margin-bottom: 2px;
+        }
+        .birthdate-mode-switch:hover {
+            text-decoration: underline;
+        }
+        .wareki-inputs {
+            display: flex;
+            gap: 5px;
+        }
+        .wareki-inputs select {
+            flex: 1.2;
+        }
+        .wareki-inputs input {
             flex: 1;
         }
     </style>
@@ -278,19 +319,27 @@
         </div>
         <div id="seminarFormBody" class="form-body">
             <input type="hidden" id="editSeminarIndex" value="">
-            <div class="form-group" style="margin-top: 10px;">
+            
+            <div class="form-group" style="margin-top: 10px; background: #fdfaf3; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                <label style="color: var(--secondary-color); margin-bottom: 8px;">✨ 既存のセミナー名から選ぶ場合：</label>
+                <select id="existingSeminarSelect" onchange="fillSeminarTitleFromSelect()">
+                    <option value="">-- 登録済みセミナー名から選択（任意） --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>セミナー名：</label>
-                <input type="text" id="seminarTitle" placeholder="例：春のおしゃれ手帳術">
+                <input type="text" id="seminarTitle" placeholder="例：春のおしゃれ手帳術（直接入力もOK）">
             </div>
             <div class="form-group">
                 <label>日時：</label>
                 <input type="date" id="seminarDate">
             </div>
             <div class="form-group">
-                <label>午前・午後の選択：</label>
+                <label>AM・PMの選択：</label>
                 <select id="seminarTimeSlot">
-                    <option value="午前">午前</option>
-                    <option value="午後">午後</option>
+                    <option value="AM（10:00～12:00）">AM（10:00～12:00）</option>
+                    <option value="PM（14:00～16:00）">PM（14:00～16:00）</option>
                     <option value="終日">終日</option>
                 </select>
             </div>
@@ -306,8 +355,8 @@
             <span id="customerToggleIcon" class="toggle-icon">▶ 開く</span>
         </div>
         <div id="customerFormBody" class="form-body">
-            <p style="font-size:0.85rem; color:#777; margin-top:0;">常連様やリピーターの情報をあらかじめ登録しておくと、参加者追加時にワンクリックで呼び出せます。</p>
-            <input type="hidden" id="editCustomerIndex" value="">
+            <p style="font-size:0.9rem; color:#777; margin-top:0;">常連様やリピーターの情報をあらかじめ登録しておくと、参加者追加時に連動します。</p>
+            <input type="hidden" id="editCustomerId" value="">
             
             <div class="form-group row-inputs">
                 <div>
@@ -320,13 +369,51 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>メール：</label>
-                <input type="email" id="cEmail" placeholder="例：example@email.com">
+            <div class="form-group row-inputs">
+                <div>
+                    <label>メール：</label>
+                    <input type="email" id="cEmail" placeholder="例：example@email.com">
+                </div>
+                <div>
+                    <label>生年月日：</label>
+                    <div class="birthdate-input-container">
+                        <div class="birthdate-mode-switch" id="cBirthdateSwitch" onclick="toggleBirthdateMode('c')">🔄 和暦で入力するに切り替え</div>
+                        <input type="date" id="cBirthdate" onchange="syncBirthdateInput('c', 'seireki')">
+                        <div id="cWarekiContainer" class="wareki-inputs" style="display: none;">
+                            <select id="cEra" onchange="syncBirthdateInput('c', 'wareki')">
+                                <option value="令和">令和</option>
+                                <option value="平成">平成</option>
+                                <option value="昭和" selected>昭和</option>
+                                <option value="大正">大正</option>
+                                <option value="明治">明治</option>
+                            </select>
+                            <input type="number" id="cEraYear" placeholder="年" min="1" max="99" value="55" oninput="syncBirthdateInput('c', 'wareki')">
+                            <select id="cEraMonth" onchange="syncBirthdateInput('c', 'wareki')">
+                                <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+                                <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+                                <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+                                <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+                            </select>
+                            <select id="cEraDay" onchange="syncBirthdateInput('c', 'wareki')">
+                                <option value="1">1日</option><option value="2">2日</option><option value="3">3日</option>
+                                <option value="4">4日</option><option value="5">5日</option><option value="6">6日</option>
+                                <option value="7">7日</option><option value="8">8日</option><option value="9">9日</option>
+                                <option value="10">10日</option><option value="11">11日</option><option value="12">12日</option>
+                                <option value="13">13日</option><option value="14">14日</option><option value="15">15日</option>
+                                <option value="16">16日</option><option value="17">17日</option><option value="18">18日</option>
+                                <option value="19">19日</option><option value="20">20日</option><option value="21">21日</option>
+                                <option value="22">22日</option><option value="23">23日</option><option value="24">24日</option>
+                                <option value="25">25日</option><option value="26">26日</option><option value="27">27日</option>
+                                <option value="28">28日</option><option value="29">29日</option><option value="30">30日</option><option value="31">31日</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="form-group">
                 <label>Instagramアカウント（ID）：</label>
-                <input type="text" id="cInstaId" placeholder="例：hanako_gram ( @は不要です )">
+                <input type="text" id="cInstaId" placeholder="例：hanako_gram">
             </div>
             <div class="form-group">
                 <label>Instagramハンドルネーム（表示名）：</label>
@@ -345,7 +432,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>備考・メモ：</label>
+                <label>備考・メモ（マスタ共通）：</label>
                 <textarea id="cMemo" placeholder="特記事項など..."></textarea>
             </div>
             <button id="customerSubmitBtn" onclick="saveCustomer()">顧客を登録する 💾</button>
@@ -354,15 +441,12 @@
             <!-- 登録済み顧客の一覧表示 ＆ 検索機能 -->
             <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-                    <p style="font-size: 0.9rem; font-weight: bold; margin: 0;">登録済み顧客一覧 (<span id="customerCount">0</span>名)</p>
+                    <p style="font-size: 0.95rem; font-weight: bold; margin: 0;">登録済み顧客一覧 (<span id="customerCount">0</span>名)</p>
                 </div>
-                <!-- 検索入力ボックス -->
                 <div class="form-group" style="margin-bottom: 10px;">
-                    <input type="text" id="customerSearchInput" placeholder="🔍 キーワードで検索（名前、ふりがな、メール、IG、出身、メモなど）" oninput="renderCustomerList()">
+                    <input type="text" id="customerSearchInput" placeholder="🔍 キーワードで検索（名前、ふりがな、メール、参加履歴など）" oninput="renderCustomerList()">
                 </div>
-                <div id="customerListContainer" style="max-height: 250px; overflow-y: auto;">
-                    <!-- JavaScriptで動的挿入 -->
-                </div>
+                <div id="customerListContainer" style="max-height: 350px; overflow-y: auto;"></div>
             </div>
         </div>
     </div>
@@ -374,63 +458,28 @@
             <span id="participantToggleIcon" class="toggle-icon">▶ 開く</span>
         </div>
         <div id="participantFormBody" class="form-body">
-            <div class="form-group" style="margin-top: 10px; background: #fdfaf3; padding: 10px; border-radius: 8px; border: 1px dashed var(--border-color);">
-                <label style="color: var(--secondary-color);">✨ 顧客リストから選んで自動入力する：</label>
-                <select id="quickCustomerSelect" onchange="fillParticipantFromCustomer()">
+            <div class="form-group" style="margin-top: 10px; background: #fdfaf3; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                <label style="color: var(--secondary-color); margin-bottom: 8px;">✨ 顧客リストから選んで登録する：</label>
+                <div style="margin-bottom: 8px;">
+                    <input type="text" id="participantCustomerSearch" placeholder="🔍 顧客をキーワード検索して絞り込む..." oninput="updateQuickCustomerSelect()">
+                </div>
+                <select id="quickCustomerSelect">
                     <option value="">-- 顧客リストから選択 --</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>登録・編集するセミナーを選択：</label>
-                <select id="targetSeminarSelect">
-                    <!-- JavaScriptで動的に挿入されます -->
-                </select>
-            </div>
-            <input type="hidden" id="editParticipantIndex" value="">
-            
-            <div class="form-group row-inputs">
-                <div>
-                    <label>お名前：</label>
-                    <input type="text" id="pName" placeholder="例：山田 花子">
-                </div>
-                <div>
-                    <label>ふりがな：</label>
-                    <input type="text" id="pFurigana" placeholder="例：やまだ はなこ">
-                </div>
-            </div>
 
             <div class="form-group">
-                <label>メール：</label>
-                <input type="email" id="pEmail" placeholder="例：example@email.com">
+                <label>登録するセミナーを選択：</label>
+                <select id="targetSeminarSelect"></select>
             </div>
+            
             <div class="form-group">
-                <label>Instagramアカウント（ID）：</label>
-                <input type="text" id="pInstaId" placeholder="例：hanako_gram ( @は不要です )">
+                <label>個別メモ（このセミナーだけの特記事項があれば）：</label>
+                <textarea id="pMemo" placeholder="例：事前アンケート回答内容など..."></textarea>
             </div>
-            <div class="form-group">
-                <label>Instagramハンドルネーム（表示名）：</label>
-                <input type="text" id="pInstaName" placeholder="例：はなこ｜丁寧な暮らし">
-            </div>
-            <div class="form-group">
-                <label>出身：</label>
-                <input type="text" id="pFrom" placeholder="例：東京都">
-            </div>
-            <div class="form-group">
-                <label>性別：</label>
-                <select id="pGender">
-                    <option value="女性">女性</option>
-                    <option value="男性">男性</option>
-                    <option value="その他・未回答">その他・未回答</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>メモ：</label>
-                <textarea id="pMemo" placeholder="気になることや事前アンケートなど..."></textarea>
-            </div>
+
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button id="participantSubmitBtn" onclick="saveParticipant()">参加者を登録する ✍️</button>
-                <!-- 編集時のみ現れる「顧客リストに追加」ボタン -->
-                <button type="button" id="btnAddToCustomer" class="btn-customer-add" onclick="addCurrentParticipantToCustomer()">⭐ 顧客リストに追加する</button>
+                <button id="participantSubmitBtn" onclick="saveParticipant()">選択した顧客をセミナーに参加させる ✍️️</button>
                 <button id="participantCancelBtn" onclick="resetParticipantForm(); toggleForm('participantFormBody', 'participantToggleIcon');" style="background-color:#bbb; display:none;">キャンセル</button>
             </div>
         </div>
@@ -442,11 +491,10 @@
             <h2>📖 セミナー＆参加者ノート一覧</h2>
         </div>
 
-        <!-- データ管理（エクスポート・インポート）エリア -->
         <div class="data-management-box">
             <div>
                 <strong>📁 データのバックアップと復元</strong>
-                <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #777;">データをファイルに保存したり、別の場所から読み込むことができます。</p>
+                <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">データをファイルに保存したり、別の場所から読み込むことができます。</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                 <button class="btn-export" onclick="exportData()">💾 エクスポート（保存）</button>
@@ -457,17 +505,172 @@
             </div>
         </div>
 
-        <div id="seminarListContainer" style="margin-top: 20px;">
-            <!-- JavaScriptで動的に挿入されます -->
-        </div>
+        <div id="seminarListContainer" style="margin-top: 20px;"></div>
     </div>
 </div>
 
 <script>
     let seminars = JSON.parse(localStorage.getItem('seminars')) || [];
     let customers = JSON.parse(localStorage.getItem('customers')) || [];
+    let birthdateModes = { c: 'seireki' };
 
-    // 共通の開閉切り替え関数
+    const eraBaseYears = { '明治': 1868, '大正': 1912, '昭和': 1926, '平成': 1989, '令和': 2019 };
+
+    function migrateOldData() {
+        let modified = false;
+        seminars.forEach(seminar => {
+            if (seminar.participants) {
+                seminar.participants = seminar.participants.map(p => {
+                    if (p.customerId) return p;
+                    let foundCustomer = customers.find(c => c.name === p.name);
+                    let cId;
+                    if (foundCustomer) {
+                        cId = foundCustomer.id;
+                    } else {
+                        cId = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                        customers.push({
+                            id: cId,
+                            name: p.name || '名前なし',
+                            furigana: p.furigana || '',
+                            email: p.email || '',
+                            birthdate: p.birthdate || '',
+                            instaId: p.instaId || '未設定',
+                            instaName: p.instaName || p.instaId || '名前なし',
+                            from: p.from || '',
+                            gender: p.gender || '女性',
+                            memo: p.memo || ''
+                        });
+                        modified = true;
+                    }
+                    return { customerId: cId, memo: p.memo || '' };
+                });
+            }
+        });
+        customers = customers.map(c => {
+            if (!c.id) {
+                modified = true;
+                return { ...c, id: 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5) };
+            }
+            return c;
+        });
+        if (modified) {
+            localStorage.setItem('seminars', JSON.stringify(seminars));
+            localStorage.setItem('customers', JSON.stringify(customers));
+        }
+    }
+    migrateOldData();
+
+    function convertToWareki(dateString) {
+        if (!dateString) return '';
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return dateString;
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        const d = parseInt(parts[2], 10);
+        const targetDateNum = y * 10000 + m * 100 + d;
+
+        let selectedEra = '西暦';
+        let eraYear = y;
+
+        if (targetDateNum >= 20190501) { selectedEra = '令和'; eraYear = y - 2019 + 1; }
+        else if (targetDateNum >= 19890108) { selectedEra = '平成'; eraYear = y - 1989 + 1; }
+        else if (targetDateNum >= 19261225) { selectedEra = '昭和'; eraYear = y - 1926 + 1; }
+        else if (targetDateNum >= 19120730) { selectedEra = '大正'; eraYear = y - 1912 + 1; }
+        else if (targetDateNum >= 18680908) { selectedEra = '明治'; eraYear = y - 1868 + 1; }
+
+        const eraYearStr = eraYear === 1 ? '元' : eraYear;
+        return `${selectedEra}${eraYearStr}年${m}月${d}日`;
+    }
+
+    function convertWarekiToSeireki(prefix) {
+        const era = document.getElementById(prefix + 'Era').value;
+        const eraYearVal = parseInt(document.getElementById(prefix + 'EraYear').value, 10);
+        const month = document.getElementById(prefix + 'EraMonth').value;
+        const day = document.getElementById(prefix + 'EraDay').value;
+        if (isNaN(eraYearVal) || eraYearVal < 1) return '';
+        const seirekiYear = eraBaseYears[era] + eraYearVal - 1;
+        return `${seirekiYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
+
+    function setWarekiFromSeireki(prefix, dateString) {
+        if (!dateString) return;
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return;
+        const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+        const targetDateNum = y * 10000 + m * 100 + d;
+        let selectedEra = '昭和', eraYear = 55;
+        if (targetDateNum >= 20190501) { selectedEra = '令和'; eraYear = y - 2019 + 1; }
+        else if (targetDateNum >= 19890108) { selectedEra = '平成'; eraYear = y - 1989 + 1; }
+        else if (targetDateNum >= 19261225) { selectedEra = '昭和'; eraYear = y - 1926 + 1; }
+        else if (targetDateNum >= 19120730) { selectedEra = '大正'; eraYear = y - 1912 + 1; }
+        else if (targetDateNum >= 18680908) { selectedEra = '明治'; eraYear = y - 1868 + 1; }
+        document.getElementById(prefix + 'Era').value = selectedEra;
+        document.getElementById(prefix + 'EraYear').value = eraYear;
+        document.getElementById(prefix + 'EraMonth').value = m;
+        document.getElementById(prefix + 'EraDay').value = d;
+    }
+
+    function toggleBirthdateMode(prefix) {
+        const currentMode = birthdateModes[prefix];
+        const seirekiInput = document.getElementById(prefix + 'Birthdate');
+        const warekiContainer = document.getElementById(prefix + 'WarekiContainer');
+        const switchBtn = document.getElementById(prefix + 'BirthdateSwitch');
+        if (currentMode === 'seireki') {
+            if (seirekiInput.value) setWarekiFromSeireki(prefix, seirekiInput.value);
+            seirekiInput.style.display = 'none';
+            warekiContainer.style.display = 'flex';
+            switchBtn.textContent = '🔄 西暦で入力するに切り替え';
+            birthdateModes[prefix] = 'wareki';
+        } else {
+            const seirekiVal = convertWarekiToSeireki(prefix);
+            if (seirekiVal) seirekiInput.value = seirekiVal;
+            warekiContainer.style.display = 'none';
+            seirekiInput.style.display = 'block';
+            switchBtn.textContent = '🔄 和暦で入力するに切り替え';
+            birthdateModes[prefix] = 'seireki';
+        }
+    }
+
+    function syncBirthdateInput(prefix, source) {
+        if (source === 'wareki') {
+            document.getElementById(prefix + 'Birthdate').value = convertWarekiToSeireki(prefix);
+        }
+    }
+
+    function getBirthdateValue(prefix) {
+        return birthdateModes[prefix] === 'wareki' ? convertWarekiToSeireki(prefix) : document.getElementById(prefix + 'Birthdate').value;
+    }
+
+    function setBirthdateValue(prefix, dateString) {
+        document.getElementById(prefix + 'Birthdate').value = dateString || '';
+        if (birthdateModes[prefix] === 'wareki' && dateString) setWarekiFromSeireki(prefix, dateString);
+    }
+
+    function formatDateWithDay(dateString) {
+        if (!dateString) return '';
+        const dateObj = new Date(dateString.replace(/-/g, '/'));
+        if (isNaN(dateObj)) return dateString;
+        const days = ['㈰', '㈪', '㈬', '㈬', '㈭', '㈮', '㈯'];
+        return `${dateString}${days[dateObj.getDay()]}`;
+    }
+
+    function calculateAge(birthdateString) {
+        if (!birthdateString) return null;
+        const birthDate = new Date(birthdateString);
+        if (isNaN(birthDate)) return null;
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        return age >= 0 ? age : null;
+    }
+
+    function getTimeSlotWeight(timeSlot) {
+        if (timeSlot && timeSlot.includes('AM')) return 1;
+        if (timeSlot && timeSlot.includes('PM')) return 2;
+        return 3;
+    }
+
     function toggleForm(bodyId, iconId) {
         const body = document.getElementById(bodyId);
         const icon = document.getElementById(iconId);
@@ -480,7 +683,6 @@
         }
     }
 
-    // 初期状態はすべて非表示
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('seminarFormBody').style.display = 'none';
         document.getElementById('seminarToggleIcon').textContent = '▶ 開く';
@@ -492,143 +694,182 @@
 
     function renderApp() {
         renderSeminarSelects();
+        renderExistingSeminarOptions();
         renderCustomerList();
+        updateQuickCustomerSelect();
         renderSeminarList();
     }
 
-    // セミナーのセレクトボックス更新
+    function renderExistingSeminarOptions() {
+        const select = document.getElementById('existingSeminarSelect');
+        select.innerHTML = '<option value="">-- 登録済みセミナー名から選択（任意） --</option>';
+        [...new Set(seminars.map(s => s.title))].filter(Boolean).forEach(title => {
+            const option = document.createElement('option');
+            option.value = title;
+            option.textContent = title;
+            select.appendChild(option);
+        });
+    }
+
+    function fillSeminarTitleFromSelect() {
+        const val = document.getElementById('existingSeminarSelect').value;
+        if (val) document.getElementById('seminarTitle').value = val;
+    }
+
     function renderSeminarSelects() {
         const seminarSelect = document.getElementById('targetSeminarSelect');
         seminarSelect.innerHTML = '';
-
         if (seminars.length === 0) {
             seminarSelect.innerHTML = '<option value="">先にセミナーを追加してください</option>';
             return;
         }
-
-        seminars.forEach((seminar, sIndex) => {
+        seminars.map((seminar, originalIndex) => ({ seminar, originalIndex })).sort((a, b) => {
+            if (a.seminar.date !== b.seminar.date) return b.seminar.date.localeCompare(a.seminar.date);
+            return getTimeSlotWeight(a.seminar.timeSlot) - getTimeSlotWeight(b.seminar.timeSlot);
+        }).forEach(({ seminar, originalIndex }) => {
             const option = document.createElement('option');
-            option.value = sIndex;
-            option.textContent = `${seminar.title} (${seminar.date} ${seminar.timeSlot})`;
+            option.value = originalIndex;
+            option.textContent = `${seminar.title} (${formatDateWithDay(seminar.date)} ${seminar.timeSlot})`;
             seminarSelect.appendChild(option);
         });
     }
 
-    // 顧客リストのセレクトボックス＆一覧更新（キーワード検索対応）
+    function getCustomerSeminarHistory(customerId) {
+        let history = [];
+        seminars.forEach(s => {
+            if (s.participants) {
+                s.participants.forEach(p => {
+                    if (p.customerId === customerId) {
+                        history.push({ title: s.title, date: s.date, timeSlot: s.timeSlot, memo: p.memo });
+                    }
+                });
+            }
+        });
+        history.sort((a, b) => b.date.localeCompare(a.date));
+        return history;
+    }
+
     function renderCustomerList() {
-        const quickSelect = document.getElementById('quickCustomerSelect');
         const customerListContainer = document.getElementById('customerListContainer');
         const customerCount = document.getElementById('customerCount');
-        const searchInputEl = document.getElementById('customerSearchInput');
-        const searchKeyword = searchInputEl ? searchInputEl.value.toLowerCase().trim() : '';
-
-        quickSelect.innerHTML = '<option value="">-- 顧客リストから選択 --</option>';
+        const searchKeyword = document.getElementById('customerSearchInput')?.value.toLowerCase().trim() || '';
         customerListContainer.innerHTML = '';
 
         if (customers.length === 0) {
             if (customerCount) customerCount.textContent = 0;
-            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.85rem;">顧客が登録されていません</p>';
+            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.9rem;">顧客が登録されていません</p>';
             return;
         }
 
-        // キーワードで全項目の一部を含むものをフィルタリング
-        const filteredCustomers = customers.map((c, originalIndex) => {
-            return { c, originalIndex };
-        }).filter(({ c }) => {
+        const filteredCustomers = customers.filter(c => {
             if (!searchKeyword) return true;
-
-            const targetText = [
-                c.name || '',
-                c.furigana || '',
-                c.email || '',
-                c.instaId || '',
-                c.instaName || '',
-                c.from || '',
-                c.gender || '',
-                c.memo || ''
-            ].join(' ').toLowerCase();
-
+            const historyText = getCustomerSeminarHistory(c.id).map(h => `${h.title} ${h.date} ${h.timeSlot} ${h.memo || ''}`).join(' ');
+            const targetText = [c.name, c.furigana, c.email, c.birthdate, convertToWareki(c.birthdate), c.instaId, c.instaName, c.from, c.gender, c.memo, historyText].join(' ').toLowerCase();
             return targetText.includes(searchKeyword);
         });
 
-        if (customerCount) {
-            customerCount.textContent = `${filteredCustomers.length} / ${customers.length}`;
-        }
-
-        customers.forEach((c, cIndex) => {
-            const option = document.createElement('option');
-            option.value = cIndex;
-            option.textContent = `${c.name} (${c.furigana || 'ふりがななし'})`;
-            quickSelect.appendChild(option);
-        });
-
+        if (customerCount) customerCount.textContent = `${filteredCustomers.length} / ${customers.length}`;
         if (filteredCustomers.length === 0) {
-            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.85rem;">一致する顧客が見つかりませんでした</p>';
+            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.9rem;">一致する顧客が見つかりませんでした</p>';
             return;
         }
 
-        filteredCustomers.forEach(({ c, originalIndex: cIndex }) => {
+        filteredCustomers.forEach((c) => {
             const div = document.createElement('div');
             div.className = 'customer-item';
+            const age = calculateAge(c.birthdate);
+            const ageDisplay = age !== null ? `${age}歳` : '年齢不明';
+            const birthDisplay = c.birthdate ? `${convertToWareki(c.birthdate)} (${c.birthdate}生 / ${ageDisplay})` : '生年月日未設定';
+
+            const history = getCustomerSeminarHistory(c.id);
+            let historyHtml = history.length > 0 ? `
+                <div class="customer-history-box">
+                    <strong>参加履歴 (${history.length}回)：</strong><br>
+                    ${history.map(h => `<span class="history-tag">📌 ${h.title} (${formatDateWithDay(h.date)} ${h.timeSlot})</span>`).join('')}
+                </div>` : `<div class="customer-history-box" style="color: #999;">参加履歴：なし</div>`;
+
             div.innerHTML = `
-                <div>
-                    <strong>${c.name}</strong> <small>(${c.furigana || 'ふりがななし'})</small> - ${c.gender}<br>
-                    <small>✉️ ${c.email || '未設定'} / IG: @${c.instaId} / 出身: ${c.from || '未設定'}</small>
+                <div class="customer-item-top">
+                    <div>
+                        <strong style="font-size: 1.05rem;">${c.name}</strong> <small>(${c.furigana || 'ふりがななし'})</small> - ${c.gender} (${ageDisplay})<br>
+                        <span style="font-size: 0.9rem; color: #666;">✉️ ${c.email || '未設定'} / 🎂 ${birthDisplay} / IG: @${c.instaId} / 出身: ${c.from || '未設定'}</span>
+                    </div>
+                    <div>
+                        <button class="button btn-sm btn-edit" onclick="editCustomer('${c.id}')">編集</button>
+                        <button class="button btn-sm btn-delete" onclick="deleteCustomer('${c.id}')">削除</button>
+                    </div>
                 </div>
-                <div>
-                    <button class="button btn-sm btn-edit" onclick="editCustomer(${cIndex})">編集</button>
-                    <button class="button btn-sm btn-delete" onclick="deleteCustomer(${cIndex})">削除</button>
-                </div>
+                ${historyHtml}
             `;
             customerListContainer.appendChild(div);
         });
     }
 
-    // 顧客リストから選択されたらフォームに自動入力
-    function fillParticipantFromCustomer() {
-        const index = document.getElementById('quickCustomerSelect').value;
-        if (index === "") return;
+    function updateQuickCustomerSelect() {
+        const quickSelect = document.getElementById('quickCustomerSelect');
+        const searchKeyword = document.getElementById('participantCustomerSearch')?.value.toLowerCase().trim() || '';
+        quickSelect.innerHTML = '<option value="">-- 顧客リストから選択 --</option>';
+        if (customers.length === 0) return;
 
-        const c = customers[index];
-        document.getElementById('pName').value = c.name || '';
-        document.getElementById('pFurigana').value = c.furigana || '';
-        document.getElementById('pEmail').value = c.email || '';
-        document.getElementById('pInstaId').value = c.instaId === '未設定' ? '' : c.instaId;
-        document.getElementById('pInstaName').value = c.instaName || '';
-        document.getElementById('pFrom').value = c.from || '';
-        document.getElementById('pGender').value = c.gender || '女性';
-        document.getElementById('pMemo').value = c.memo || '';
+        customers.forEach((c) => {
+            const history = getCustomerSeminarHistory(c.id);
+            const targetText = [c.name, c.furigana, c.email, c.birthdate, convertToWareki(c.birthdate), c.instaId, c.instaName, c.from, c.memo, history.map(h => `${h.title} ${h.date}`).join(' ')].join(' ').toLowerCase();
+            if (!searchKeyword || targetText.includes(searchKeyword)) {
+                const option = document.createElement('option');
+                option.value = c.id;
+                const age = calculateAge(c.birthdate);
+                option.textContent = `${c.name} (${c.furigana || 'ふりがななし'}) ${age !== null ? `${age}歳` : ''} [参加回数: ${history.length}回]`;
+                quickSelect.appendChild(option);
+            }
+        });
     }
 
-    // セミナー一覧＆参加者リストの描画
     function renderSeminarList() {
         const seminarListContainer = document.getElementById('seminarListContainer');
         seminarListContainer.innerHTML = '';
-
         if (seminars.length === 0) {
             seminarListContainer.innerHTML = '<p style="text-align:center; color:#999; padding: 20px 0;">まだセミナーが登録されていません。</p>';
             return;
         }
 
-        seminars.forEach((seminar, sIndex) => {
+        seminars.map((seminar, originalIndex) => ({ seminar, originalIndex })).sort((a, b) => {
+            if (a.seminar.date !== b.seminar.date) return b.seminar.date.localeCompare(b.seminar.date);
+            return getTimeSlotWeight(a.seminar.timeSlot) - getTimeSlotWeight(b.seminar.timeSlot);
+        }).forEach(({ seminar, originalIndex: sIndex }) => {
             let participantHtml = '';
             if (seminar.participants && seminar.participants.length > 0) {
                 seminar.participants.forEach((p, pIndex) => {
-                    const emailDisplay = p.email ? `✉️ <a href="mailto:${p.email}">${p.email}</a><br>` : '';
+                    const customer = customers.find(c => c.id === p.customerId);
+                    if (!customer) {
+                        participantHtml += `
+                            <li class="participant-item">
+                                <div style="color:#d9534f;">
+                                    <strong>[削除された顧客]</strong><br><small>メモ: ${p.memo || 'なし'}</small>
+                                </div>
+                                <div><button class="button btn-sm btn-delete" onclick="deleteParticipant(${sIndex}, ${pIndex})">削除</button></div>
+                            </li>`;
+                        return;
+                    }
+                    const age = calculateAge(customer.birthdate);
+                    const ageDisplay = age !== null ? `${age}歳` : '年齢不明';
+                    
+                    const instaIdClean = customer.instaId && customer.instaId !== '未設定' ? customer.instaId.trim() : '';
+                    const instaHtml = instaIdClean 
+                        ? `<a href="https://instagram.com/${instaIdClean}" target="_blank" style="color: var(--secondary-color); text-decoration: underline; font-weight: bold;">@${instaIdClean}</a>` 
+                        : '未設定';
+
                     participantHtml += `
                         <li class="participant-item">
                             <div>
-                                <strong>${p.name}</strong> <small>(${p.furigana || 'ふりがななし'})</small> (${p.gender} / 出身: ${p.from})<br>
-                                ${emailDisplay}
-                                IG: <a href="${p.url}" target="_blank">${p.instaName} (@${p.instaId})</a><br>
-                                <small>メモ: ${p.memo || 'なし'}</small>
+                                <strong style="font-size: 1.05rem;">${customer.name}</strong> (${customer.furigana || 'ふりがななし'}) (${customer.gender} / ${ageDisplay})<br>
+                                <span style="font-size: 0.9rem;">IG: ${instaHtml} / 出身: ${customer.from || '未設定'}</span><br>
+                                <span style="font-size: 0.9rem; color: #555;">メモ: ${p.memo || 'なし'}</span>
                             </div>
                             <div>
-                                <button class="button btn-sm btn-edit" onclick="editParticipant(${sIndex}, ${pIndex})">編集</button>
+                                <button class="button btn-sm btn-edit" onclick="editCustomerFromSeminar('${customer.id}')">マスタ編集</button>
                                 <button class="button btn-sm btn-delete" onclick="deleteParticipant(${sIndex}, ${pIndex})">削除</button>
                             </div>
-                        </li>
-                    `;
+                        </li>`;
                 });
             } else {
                 participantHtml = '<li class="participant-item" style="color:#888; justify-content:center;">まだ参加者がいません</li>';
@@ -639,178 +880,155 @@
             seminarDiv.innerHTML = `
                 <div class="seminar-header">
                     <div>
-                        <strong>📌 ${seminar.title}</strong><br>
-                        <span class="tag">${seminar.date} (${seminar.timeSlot})</span>
+                        <strong style="font-size: 1.1rem; color: #5c5346;">📌 ${seminar.title}</strong><br>
+                        <span class="tag" style="margin-top: 4px; display: inline-block;">${formatDateWithDay(seminar.date)} ${seminar.timeSlot}</span>
                     </div>
-                    <div>
-                        <button class="button btn-sm btn-edit" onclick="editSeminar(${sIndex})">セミナー編集</button>
-                        <button class="button btn-sm btn-delete" onclick="deleteSeminar(${sIndex})">セミナー削除</button>
+                    <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                        <button class="button btn-sm" style="background-color: #85cdca;" onclick="openAddParticipantForSeminar(${sIndex})">➕ 参加者追加</button>
+                        <button class="button btn-sm btn-edit" onclick="editSeminar(${sIndex})">編集</button>
+                        <button class="button btn-sm btn-delete" onclick="deleteSeminar(${sIndex})">削除</button>
                     </div>
                 </div>
-                <p style="margin: 10px 0 5px 0; font-size: 0.9rem; font-weight: bold;">参加者一覧 (${seminar.participants ? seminar.participants.length : 0}名)</p>
+                <p style="margin: 12px 0 8px 0; font-size: 0.95rem; font-weight: bold;">参加者一覧 (${seminar.participants ? seminar.participants.length : 0}名)</p>
                 <ul class="participant-list">${participantHtml}</ul>
             `;
             seminarListContainer.appendChild(seminarDiv);
         });
     }
 
-    // 顧客の保存・更新
+    function openAddParticipantForSeminar(sIndex) {
+        const body = document.getElementById('participantFormBody');
+        if (body.style.display !== 'block') {
+            toggleForm('participantFormBody', 'participantToggleIcon');
+        }
+        renderSeminarSelects();
+        document.getElementById('targetSeminarSelect').value = sIndex;
+        window.scrollTo({ top: document.getElementById('participantFormBody').offsetTop - 50, behavior: 'smooth' });
+    }
+
     function saveCustomer() {
         const name = document.getElementById('cName').value.trim();
-        if (!name) {
-            alert('お名前を入力してください。');
-            return;
-        }
-
-        const editIndex = document.getElementById('editCustomerIndex').value;
-        const email = document.getElementById('cEmail').value.trim();
-        const instaId = document.getElementById('cInstaId').value.trim();
-
+        if (!name) { alert('お名前を入力してください。'); return; }
+        const editId = document.getElementById('editCustomerId').value;
         const customerData = {
+            id: editId || ('cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)),
             name: name,
             furigana: document.getElementById('cFurigana').value.trim(),
-            email: email,
-            instaId: instaId || '未設定',
-            instaName: document.getElementById('cInstaName').value || instaId || '名前なし',
+            email: document.getElementById('cEmail').value.trim(),
+            birthdate: getBirthdateValue('c'),
+            instaId: document.getElementById('cInstaId').value.trim() || '未設定',
+            instaName: document.getElementById('cInstaName').value || document.getElementById('cInstaId').value.trim() || '名前なし',
             from: document.getElementById('cFrom').value.trim(),
             gender: document.getElementById('cGender').value,
             memo: document.getElementById('cMemo').value.trim()
         };
-
-        if (editIndex === "") {
+        if (!editId) {
             customers.push(customerData);
             alert('顧客を登録しました！');
         } else {
-            customers[editIndex] = customerData;
+            const index = customers.findIndex(c => c.id === editId);
+            if (index !== -1) customers[index] = customerData;
             alert('顧客情報を更新しました！');
         }
-
         resetCustomerForm();
         saveAndRefresh();
     }
 
-    function editCustomer(cIndex) {
-        const c = customers[cIndex];
+    function editCustomer(cId) {
+        const c = customers.find(item => item.id === cId);
+        if (!c) return;
         document.getElementById('cName').value = c.name;
         document.getElementById('cFurigana').value = c.furigana || '';
         document.getElementById('cEmail').value = c.email || '';
+        setBirthdateValue('c', c.birthdate);
         document.getElementById('cInstaId').value = c.instaId === '未設定' ? '' : c.instaId;
         document.getElementById('cInstaName').value = c.instaName;
-        document.getElementById('cFrom').value = c.from;
-        document.getElementById('cGender').value = c.gender;
-        document.getElementById('cMemo').value = c.memo;
-        document.getElementById('editCustomerIndex').value = cIndex;
-
+        document.getElementById('cFrom').value = c.from || '';
+        document.getElementById('cGender').value = c.gender || '女性';
+        document.getElementById('cMemo').value = c.memo || '';
+        document.getElementById('editCustomerId').value = c.id;
         document.getElementById('customerFormTitle').textContent = '✏️ 顧客情報を編集する';
         document.getElementById('customerSubmitBtn').textContent = '更新する 💾';
         document.getElementById('customerCancelBtn').style.display = 'inline-block';
-        
-        const body = document.getElementById('customerFormBody');
-        if (body.style.display !== 'block') {
-            toggleForm('customerFormBody', 'customerToggleIcon');
-        }
+        if (document.getElementById('customerFormBody').style.display !== 'block') toggleForm('customerFormBody', 'customerToggleIcon');
         window.scrollTo({ top: 100, behavior: 'smooth' });
     }
+
+    function editCustomerFromSeminar(cId) { editCustomer(cId); }
 
     function resetCustomerForm() {
         document.getElementById('cName').value = '';
         document.getElementById('cFurigana').value = '';
         document.getElementById('cEmail').value = '';
+        setBirthdateValue('c', '');
+        if (birthdateModes['c'] === 'wareki') toggleBirthdateMode('c');
         document.getElementById('cInstaId').value = '';
         document.getElementById('cInstaName').value = '';
+        document.getElementById('cFrom').value = '0';
         document.getElementById('cFrom').value = '';
         document.getElementById('cMemo').value = '';
-        document.getElementById('editCustomerIndex').value = '';
+        document.getElementById('editCustomerId').value = '';
         document.getElementById('customerFormTitle').textContent = '👥 顧客リスト（マスタ登録）';
         document.getElementById('customerSubmitBtn').textContent = '顧客を登録する 💾';
         document.getElementById('customerCancelBtn').style.display = 'none';
     }
 
-    function deleteCustomer(cIndex) {
-        if (confirm(`「${customers[cIndex].name}」さんを顧客リストから削除しますか？（過去のセミナー参加履歴には影響しません）`)) {
-            customers.splice(cIndex, 1);
+    function deleteCustomer(cId) {
+        const c = customers.find(item => item.id === cId);
+        if (!c) return;
+        if (confirm(`「${c.name}」さんを顧客リストから削除しますか？`)) {
+            customers = customers.filter(item => item.id !== cId);
             saveAndRefresh();
         }
     }
 
-    // エクスポート（ファイル保存：セミナー＋顧客データ）
     function exportData() {
-        if (seminars.length === 0 && customers.length === 0) {
-            alert('エクスポートするデータがありません。');
-            return;
-        }
-
-        const exportObj = {
-            seminars: seminars,
-            customers: customers
-        };
-
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+        if (seminars.length === 0 && customers.length === 0) { alert('エクスポートするデータがありません。'); return; }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ seminars, customers }, null, 2));
         const downloadAnchor = document.createElement('a');
-        
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `seminar_app_data_${today}.json`);
-        
+        downloadAnchor.setAttribute("download", `seminar_app_data_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
     }
 
-    // インポート（ファイル読み込み）
     function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
-                if (confirm('現在のデータに上書きしますか？\n「OK」を押すと読み込んだデータに置き換わります。')) {
-                    if (Array.isArray(importedData)) {
-                        seminars = importedData;
-                    } else if (importedData && typeof importedData === 'object') {
-                        seminars = importedData.seminars || [];
-                        customers = importedData.customers || [];
-                    }
+                if (confirm('現在のデータに上書きしますか？')) {
+                    seminars = importedData.seminars || (Array.isArray(importedData) ? importedData : []);
+                    customers = importedData.customers || [];
+                    migrateOldData();
                     saveAndRefresh();
                     alert('データを正常にインポートしました！');
                 }
             } catch (error) {
-                alert('JSONファイルの読み込みに失敗しました。ファイルが破損している可能性があります。');
+                alert('JSONファイルの読み込みに失敗しました。');
             }
             event.target.value = '';
         };
         reader.readAsText(file);
     }
 
-    // セミナーの追加・更新
     function saveSeminar() {
         const title = document.getElementById('seminarTitle').value.trim();
         const date = document.getElementById('seminarDate').value;
         const timeSlot = document.getElementById('seminarTimeSlot').value;
         const editIndex = document.getElementById('editSeminarIndex').value;
-
-        if (!title || !date) {
-            alert('セミナー名と日時を入力してください。');
-            return;
-        }
+        if (!title || !date) { alert('セミナー名と日時を入力してください。'); return; }
 
         if (editIndex === "") {
-            seminars.push({
-                title: title,
-                date: date,
-                timeSlot: timeSlot,
-                participants: []
-            });
+            seminars.push({ title, date, timeSlot, participants: [] });
             alert('セミナーを登録しました！');
         } else {
-            seminars[editIndex].title = title;
-            seminars[editIndex].date = date;
-            seminars[editIndex].timeSlot = timeSlot;
+            seminars[editIndex] = { ...seminars[editIndex], title, date, timeSlot };
             alert('セミナー情報を更新しました！');
         }
-
         resetSeminarForm();
         toggleForm('seminarFormBody', 'seminarToggleIcon');
         saveAndRefresh();
@@ -822,21 +1040,17 @@
         document.getElementById('seminarDate').value = seminar.date;
         document.getElementById('seminarTimeSlot').value = seminar.timeSlot;
         document.getElementById('editSeminarIndex').value = sIndex;
-
         document.getElementById('seminarFormTitle').textContent = '✏️ セミナー情報を編集する';
         document.getElementById('seminarSubmitBtn').textContent = '更新する ✨';
         document.getElementById('seminarCancelBtn').style.display = 'inline-block';
-        
-        const body = document.getElementById('seminarFormBody');
-        if (body.style.display !== 'block') {
-            toggleForm('seminarFormBody', 'seminarToggleIcon');
-        }
+        if (document.getElementById('seminarFormBody').style.display !== 'block') toggleForm('seminarFormBody', 'seminarToggleIcon');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetSeminarForm() {
         document.getElementById('seminarTitle').value = '';
         document.getElementById('seminarDate').value = '';
+        document.getElementById('existingSeminarSelect').value = '';
         document.getElementById('editSeminarIndex').value = '';
         document.getElementById('seminarFormTitle').textContent = '➕ 新しいセミナーを登録する';
         document.getElementById('seminarSubmitBtn').textContent = 'セミナーを登録する ✨';
@@ -844,143 +1058,40 @@
     }
 
     function deleteSeminar(sIndex) {
-        if (confirm(`「${seminars[sIndex].title}」を削除しますか？紐づく参加者データもすべて削除されます。`)) {
+        if (confirm(`「${seminars[sIndex].title}」を削除しますか？`)) {
             seminars.splice(sIndex, 1);
             saveAndRefresh();
         }
     }
 
-    // 参加者の追加・更新
     function saveParticipant() {
         const sIndex = document.getElementById('targetSeminarSelect').value;
-        if (sIndex === "") {
-            alert('登録先のセミナーを選択してください。');
+        if (sIndex === "") { alert('登録先のセミナーを選択してください。'); return; }
+        const customerId = document.getElementById('quickCustomerSelect').value;
+        if (!customerId) { alert('顧客リストから参加者を選択してください。'); return; }
+        if (seminars[sIndex].participants.some(p => p.customerId === customerId)) {
+            alert('この顧客はすでにこのセミナーに参加登録されています。');
             return;
         }
-
-        const name = document.getElementById('pName').value.trim();
-        if (!name) {
-            alert('お名前を入力してください。');
-            return;
-        }
-
-        const editIndex = document.getElementById('editParticipantIndex').value;
-        const email = document.getElementById('pEmail').value.trim();
-        const instaId = document.getElementById('pInstaId').value.trim();
-        const instaUrl = instaId ? `https://instagram.com/${instaId.replace('@', '')}` : '#';
-
-        const participantData = {
-            name: name,
-            furigana: document.getElementById('pFurigana').value.trim(),
-            email: email,
-            instaId: instaId || '未設定',
-            instaName: document.getElementById('pInstaName').value || instaId || '名前なし',
-            url: instaUrl,
-            from: document.getElementById('pFrom').value.trim(),
-            gender: document.getElementById('pGender').value,
-            memo: document.getElementById('pMemo').value.trim()
-        };
-
-        if (editIndex === "") {
-            seminars[sIndex].participants.push(participantData);
-            alert('参加者を登録しました！');
-        } else {
-            seminars[sIndex].participants[editIndex] = participantData;
-            alert('参加者情報を更新しました！');
-        }
-
+        seminars[sIndex].participants.push({ customerId, memo: document.getElementById('pMemo').value.trim() });
+        alert('参加者を登録しました！');
         resetParticipantForm();
         toggleForm('participantFormBody', 'participantToggleIcon');
         saveAndRefresh();
     }
 
-    function editParticipant(sIndex, pIndex) {
-        const p = seminars[sIndex].participants[pIndex];
-        document.getElementById('targetSeminarSelect').value = sIndex;
-        document.getElementById('quickCustomerSelect').value = "";
-        document.getElementById('pName').value = p.name;
-        document.getElementById('pFurigana').value = p.furigana || '';
-        document.getElementById('pEmail').value = p.email || '';
-        document.getElementById('pInstaId').value = p.instaId === '未設定' ? '' : p.instaId;
-        document.getElementById('pInstaName').value = p.instaName;
-        document.getElementById('pFrom').value = p.from;
-        document.getElementById('pGender').value = p.gender;
-        document.getElementById('pMemo').value = p.memo;
-        document.getElementById('editParticipantIndex').value = pIndex;
-
-        document.getElementById('participantFormTitle').textContent = '✏️ 参加者情報を編集する';
-        document.getElementById('participantSubmitBtn').textContent = '更新する ✍️';
-        document.getElementById('btnAddToCustomer').style.display = 'inline-block';
-        document.getElementById('participantCancelBtn').style.display = 'inline-block';
-        
-        const body = document.getElementById('participantFormBody');
-        if (body.style.display !== 'block') {
-            toggleForm('participantFormBody', 'participantToggleIcon');
-        }
-        window.scrollTo({ top: 250, behavior: 'smooth' });
-    }
-
-    // 編集中の参加者情報を「顧客リスト」に登録または上書きする機能
-    function addCurrentParticipantToCustomer() {
-        const name = document.getElementById('pName').value.trim();
-        if (!name) {
-            alert('お名前を入力してください。');
-            return;
-        }
-
-        const furigana = document.getElementById('pFurigana').value.trim();
-        const email = document.getElementById('pEmail').value.trim();
-        const instaId = document.getElementById('pInstaId').value.trim();
-        const instaName = document.getElementById('pInstaName').value.trim();
-        const from = document.getElementById('pFrom').value.trim();
-        const gender = document.getElementById('pGender').value;
-        const memo = document.getElementById('pMemo').value.trim();
-
-        const existingIndex = customers.findIndex(c => c.name === name);
-
-        const customerData = {
-            name: name,
-            furigana: furigana,
-            email: email,
-            instaId: instaId || '未設定',
-            instaName: instaName || instaId || '名前なし',
-            from: from,
-            gender: gender,
-            memo: memo
-        };
-
-        if (existingIndex !== -1) {
-            if (confirm(`「${name}」さんはすでに顧客リストに登録されています。現在の内容で上書き更新しますか？`)) {
-                customers[existingIndex] = customerData;
-                alert('顧客リストの情報を更新しました！');
-            }
-        } else {
-            customers.push(customerData);
-            alert(`「${name}」さんを新しく顧客リストに追加しました！✨`);
-        }
-
-        saveAndRefresh();
-    }
-
     function resetParticipantForm() {
+        document.getElementById('participantCustomerSearch').value = '';
         document.getElementById('quickCustomerSelect').value = '';
-        document.getElementById('pName').value = '';
-        document.getElementById('pFurigana').value = '';
-        document.getElementById('pEmail').value = '';
-        document.getElementById('pInstaId').value = '';
-        document.getElementById('pInstaName').value = '';
-        document.getElementById('pFrom').value = '';
+        updateQuickCustomerSelect();
         document.getElementById('pMemo').value = '';
-        document.getElementById('editParticipantIndex').value = '';
         document.getElementById('participantFormTitle').textContent = '➕ 参加者を登録する';
-        document.getElementById('participantSubmitBtn').textContent = '参加者を登録する ✍️';
-        document.getElementById('btnAddToCustomer').style.display = 'none';
+        document.getElementById('participantSubmitBtn').textContent = '選択した顧客をセミナーに参加させる ✍️️';
         document.getElementById('participantCancelBtn').style.display = 'none';
     }
 
     function deleteParticipant(sIndex, pIndex) {
-        const pName = seminars[sIndex].participants[pIndex].name;
-        if (confirm(`「${pName}」さんを参加者リストから削除しますか？`)) {
+        if (confirm('この参加者をセミナーから外しますか？')) {
             seminars[sIndex].participants.splice(pIndex, 1);
             saveAndRefresh();
         }
@@ -992,7 +1103,6 @@
         renderApp();
     }
 
-    // 初回描画
     renderApp();
 </script>
 
