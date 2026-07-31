@@ -1,1 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>セミナー＆参加者ノート</title>
+    <style>
+        :root {
+            --bg-color: #fcfaf2;
+            --card-bg: #ffffff;
+            --text-color: #5c5346;
+            --primary-color: #e8a87c;
+            --secondary-color: #c38d9e;
+            --accent-color: #85cdca;
+            --border-color: #e3dec3;
+            --delete-color: #e8a5a5;
+            --export-color: #93b5c6;
+            --customer-btn-color: #d4a5a5;
+        }
 
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #7c6f59;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            border-bottom: 2px dashed var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-header-flex h2 {
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-left: 5px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        /* 開閉用の見出しスタイル */
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            opacity: 0.8;
+        }
+
+        .toggle-icon {
+            font-size: 1rem;
+            color: var(--secondary-color);
+        }
+
+        /* フォームの開閉エリア */
+        .form-body {
+            display: none;
+            margin-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #fffdf9;
+            box-sizing: border-box;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #b57a52;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            box-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+            margin-left: 5px;
+        }
+
+        .btn-edit {
+            background-color: var(--accent-color);
+        }
+
+        .btn-delete {
+            background-color: var(--delete-color);
+        }
+
+        .btn-customer-add {
+            background-color: #d4a574;
+            box-shadow: 1px 1px 0px #a67c4f;
+            display: none; /* 編集時のみ表示 */
+        }
+
+        .btn-export {
+            background-color: var(--export-color);
+            box-shadow: 2px 2px 0px #608090;
+        }
+
+        .btn-import {
+            background-color: #b5c18e;
+            box-shadow: 2px 2px 0px #85965e;
+        }
+
+        .seminar-item {
+            background: #fffdfa;
+            border: 1px dashed var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .seminar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .participant-list {
+            margin-top: 10px;
+            padding-left: 0;
+            font-size: 0.9rem;
+        }
+
+        .participant-item {
+            margin-bottom: 8px;
+            background: #f7f5ee;
+            padding: 10px;
+            border-radius: 6px;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .customer-item {
+            background: #f7f5ee;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            background: var(--accent-color);
+            color: white;
+            margin-right: 5px;
+        }
+
+        .data-management-box {
+            background: #f7f5ee;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--border-color);
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .import-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .row-inputs > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📖 セミナー＆参加者ノート</h1>
+
+    <!-- セミナー登録カード -->
+    <div class="card">
+        <div class="collapsible-header" onclick="toggleForm('seminarFormBody', 'seminarToggleIcon')">
+            <h2 id="seminarFormTitle" style="margin: 0; border: none; padding: 0;">➕ 新しいセミナーを登録する</h2>
+            <span id="seminarToggleIcon" class="toggle-icon">▶ 開く</span>
+        </div>
+        <div id="seminarFormBody" class="form-body">
+            <input type="hidden" id="editSeminarIndex" value="">
+            <div class="form-group" style="margin-top: 10px;">
+                <label>セミナー名：</label>
+                <input type="text" id="seminarTitle" placeholder="例：春のおしゃれ手帳術">
+            </div>
+            <div class="form-group">
+                <label>日時：</label>
+                <input type="date" id="seminarDate">
+            </div>
+            <div class="form-group">
+                <label>午前・午後の選択：</label>
+                <select id="seminarTimeSlot">
+                    <option value="午前">午前</option>
+                    <option value="午後">午後</option>
+                    <option value="終日">終日</option>
+                </select>
+            </div>
+            <button id="seminarSubmitBtn" onclick="saveSeminar()">セミナーを登録する ✨</button>
+            <button id="seminarCancelBtn" onclick="resetSeminarForm(); toggleForm('seminarFormBody', 'seminarToggleIcon');" style="background-color:#bbb; display:none;">キャンセル</button>
+        </div>
+    </div>
+
+    <!-- 顧客リスト（マスタ）カード -->
+    <div class="card">
+        <div class="collapsible-header" onclick="toggleForm('customerFormBody', 'customerToggleIcon')">
+            <h2 id="customerFormTitle" style="margin: 0; border: none; padding: 0;">👥 顧客リスト（マスタ登録）</h2>
+            <span id="customerToggleIcon" class="toggle-icon">▶ 開く</span>
+        </div>
+        <div id="customerFormBody" class="form-body">
+            <p style="font-size:0.85rem; color:#777; margin-top:0;">常連様やリピーターの情報をあらかじめ登録しておくと、参加者追加時にワンクリックで呼び出せます。</p>
+            <input type="hidden" id="editCustomerIndex" value="">
+            
+            <div class="form-group row-inputs">
+                <div>
+                    <label>お名前：</label>
+                    <input type="text" id="cName" placeholder="例：山田 花子">
+                </div>
+                <div>
+                    <label>ふりがな：</label>
+                    <input type="text" id="cFurigana" placeholder="例：やまだ はなこ">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>メール：</label>
+                <input type="email" id="cEmail" placeholder="例：example@email.com">
+            </div>
+            <div class="form-group">
+                <label>Instagramアカウント（ID）：</label>
+                <input type="text" id="cInstaId" placeholder="例：hanako_gram ( @は不要です )">
+            </div>
+            <div class="form-group">
+                <label>Instagramハンドルネーム（表示名）：</label>
+                <input type="text" id="cInstaName" placeholder="例：はなこ｜丁寧な暮らし">
+            </div>
+            <div class="form-group">
+                <label>出身：</label>
+                <input type="text" id="cFrom" placeholder="例：東京都">
+            </div>
+            <div class="form-group">
+                <label>性別：</label>
+                <select id="cGender">
+                    <option value="女性">女性</option>
+                    <option value="男性">男性</option>
+                    <option value="その他・未回答">その他・未回答</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>備考・メモ：</label>
+                <textarea id="cMemo" placeholder="特記事項など..."></textarea>
+            </div>
+            <button id="customerSubmitBtn" onclick="saveCustomer()">顧客を登録する 💾</button>
+            <button id="customerCancelBtn" onclick="resetCustomerForm()" style="background-color:#bbb; display:none;">キャンセル</button>
+
+            <!-- 登録済み顧客の一覧表示 ＆ 検索機能 -->
+            <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                    <p style="font-size: 0.9rem; font-weight: bold; margin: 0;">登録済み顧客一覧 (<span id="customerCount">0</span>名)</p>
+                </div>
+                <!-- 検索入力ボックス -->
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="customerSearchInput" placeholder="🔍 キーワードで検索（名前、ふりがな、メール、IG、出身、メモなど）" oninput="renderCustomerList()">
+                </div>
+                <div id="customerListContainer" style="max-height: 250px; overflow-y: auto;">
+                    <!-- JavaScriptで動的挿入 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 参加者登録カード -->
+    <div class="card">
+        <div class="collapsible-header" onclick="toggleForm('participantFormBody', 'participantToggleIcon')">
+            <h2 id="participantFormTitle" style="margin: 0; border: none; padding: 0;">➕ 参加者を登録する</h2>
+            <span id="participantToggleIcon" class="toggle-icon">▶ 開く</span>
+        </div>
+        <div id="participantFormBody" class="form-body">
+            <div class="form-group" style="margin-top: 10px; background: #fdfaf3; padding: 10px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                <label style="color: var(--secondary-color);">✨ 顧客リストから選んで自動入力する：</label>
+                <select id="quickCustomerSelect" onchange="fillParticipantFromCustomer()">
+                    <option value="">-- 顧客リストから選択 --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>登録・編集するセミナーを選択：</label>
+                <select id="targetSeminarSelect">
+                    <!-- JavaScriptで動的に挿入されます -->
+                </select>
+            </div>
+            <input type="hidden" id="editParticipantIndex" value="">
+            
+            <div class="form-group row-inputs">
+                <div>
+                    <label>お名前：</label>
+                    <input type="text" id="pName" placeholder="例：山田 花子">
+                </div>
+                <div>
+                    <label>ふりがな：</label>
+                    <input type="text" id="pFurigana" placeholder="例：やまだ はなこ">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>メール：</label>
+                <input type="email" id="pEmail" placeholder="例：example@email.com">
+            </div>
+            <div class="form-group">
+                <label>Instagramアカウント（ID）：</label>
+                <input type="text" id="pInstaId" placeholder="例：hanako_gram ( @は不要です )">
+            </div>
+            <div class="form-group">
+                <label>Instagramハンドルネーム（表示名）：</label>
+                <input type="text" id="pInstaName" placeholder="例：はなこ｜丁寧な暮らし">
+            </div>
+            <div class="form-group">
+                <label>出身：</label>
+                <input type="text" id="pFrom" placeholder="例：東京都">
+            </div>
+            <div class="form-group">
+                <label>性別：</label>
+                <select id="pGender">
+                    <option value="女性">女性</option>
+                    <option value="男性">男性</option>
+                    <option value="その他・未回答">その他・未回答</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>メモ：</label>
+                <textarea id="pMemo" placeholder="気になることや事前アンケートなど..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button id="participantSubmitBtn" onclick="saveParticipant()">参加者を登録する ✍️</button>
+                <!-- 編集時のみ現れる「顧客リストに追加」ボタン -->
+                <button type="button" id="btnAddToCustomer" class="btn-customer-add" onclick="addCurrentParticipantToCustomer()">⭐ 顧客リストに追加する</button>
+                <button id="participantCancelBtn" onclick="resetParticipantForm(); toggleForm('participantFormBody', 'participantToggleIcon');" style="background-color:#bbb; display:none;">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登録一覧カード -->
+    <div class="card">
+        <div class="card-header-flex">
+            <h2>📖 セミナー＆参加者ノート一覧</h2>
+        </div>
+
+        <!-- データ管理（エクスポート・インポート）エリア -->
+        <div class="data-management-box">
+            <div>
+                <strong>📁 データのバックアップと復元</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #777;">データをファイルに保存したり、別の場所から読み込むことができます。</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button class="btn-export" onclick="exportData()">💾 エクスポート（保存）</button>
+                <div class="import-wrapper">
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 インポート（読込）</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="seminarListContainer" style="margin-top: 20px;">
+            <!-- JavaScriptで動的に挿入されます -->
+        </div>
+    </div>
+</div>
+
+<script>
+    let seminars = JSON.parse(localStorage.getItem('seminars')) || [];
+    let customers = JSON.parse(localStorage.getItem('customers')) || [];
+
+    // 共通の開閉切り替え関数
+    function toggleForm(bodyId, iconId) {
+        const body = document.getElementById(bodyId);
+        const icon = document.getElementById(iconId);
+        if (body.style.display === 'block') {
+            body.style.display = 'none';
+            icon.textContent = '▶ 開く';
+        } else {
+            body.style.display = 'block';
+            icon.textContent = '▼ 閉じる';
+        }
+    }
+
+    // 初期状態はすべて非表示
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('seminarFormBody').style.display = 'none';
+        document.getElementById('seminarToggleIcon').textContent = '▶ 開く';
+        document.getElementById('customerFormBody').style.display = 'none';
+        document.getElementById('customerToggleIcon').textContent = '▶ 開く';
+        document.getElementById('participantFormBody').style.display = 'none';
+        document.getElementById('participantToggleIcon').textContent = '▶ 開く';
+    });
+
+    function renderApp() {
+        renderSeminarSelects();
+        renderCustomerList();
+        renderSeminarList();
+    }
+
+    // セミナーのセレクトボックス更新
+    function renderSeminarSelects() {
+        const seminarSelect = document.getElementById('targetSeminarSelect');
+        seminarSelect.innerHTML = '';
+
+        if (seminars.length === 0) {
+            seminarSelect.innerHTML = '<option value="">先にセミナーを追加してください</option>';
+            return;
+        }
+
+        seminars.forEach((seminar, sIndex) => {
+            const option = document.createElement('option');
+            option.value = sIndex;
+            option.textContent = `${seminar.title} (${seminar.date} ${seminar.timeSlot})`;
+            seminarSelect.appendChild(option);
+        });
+    }
+
+    // 顧客リストのセレクトボックス＆一覧更新（キーワード検索対応）
+    function renderCustomerList() {
+        const quickSelect = document.getElementById('quickCustomerSelect');
+        const customerListContainer = document.getElementById('customerListContainer');
+        const customerCount = document.getElementById('customerCount');
+        const searchInputEl = document.getElementById('customerSearchInput');
+        const searchKeyword = searchInputEl ? searchInputEl.value.toLowerCase().trim() : '';
+
+        quickSelect.innerHTML = '<option value="">-- 顧客リストから選択 --</option>';
+        customerListContainer.innerHTML = '';
+
+        if (customers.length === 0) {
+            if (customerCount) customerCount.textContent = 0;
+            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.85rem;">顧客が登録されていません</p>';
+            return;
+        }
+
+        // キーワードで全項目の一部を含むものをフィルタリング
+        const filteredCustomers = customers.map((c, originalIndex) => {
+            return { c, originalIndex };
+        }).filter(({ c }) => {
+            if (!searchKeyword) return true;
+
+            const targetText = [
+                c.name || '',
+                c.furigana || '',
+                c.email || '',
+                c.instaId || '',
+                c.instaName || '',
+                c.from || '',
+                c.gender || '',
+                c.memo || ''
+            ].join(' ').toLowerCase();
+
+            return targetText.includes(searchKeyword);
+        });
+
+        if (customerCount) {
+            customerCount.textContent = `${filteredCustomers.length} / ${customers.length}`;
+        }
+
+        customers.forEach((c, cIndex) => {
+            const option = document.createElement('option');
+            option.value = cIndex;
+            option.textContent = `${c.name} (${c.furigana || 'ふりがななし'})`;
+            quickSelect.appendChild(option);
+        });
+
+        if (filteredCustomers.length === 0) {
+            customerListContainer.innerHTML = '<p style="text-align:center; color:#999; font-size:0.85rem;">一致する顧客が見つかりませんでした</p>';
+            return;
+        }
+
+        filteredCustomers.forEach(({ c, originalIndex: cIndex }) => {
+            const div = document.createElement('div');
+            div.className = 'customer-item';
+            div.innerHTML = `
+                <div>
+                    <strong>${c.name}</strong> <small>(${c.furigana || 'ふりがななし'})</small> - ${c.gender}<br>
+                    <small>✉️ ${c.email || '未設定'} / IG: @${c.instaId} / 出身: ${c.from || '未設定'}</small>
+                </div>
+                <div>
+                    <button class="button btn-sm btn-edit" onclick="editCustomer(${cIndex})">編集</button>
+                    <button class="button btn-sm btn-delete" onclick="deleteCustomer(${cIndex})">削除</button>
+                </div>
+            `;
+            customerListContainer.appendChild(div);
+        });
+    }
+
+    // 顧客リストから選択されたらフォームに自動入力
+    function fillParticipantFromCustomer() {
+        const index = document.getElementById('quickCustomerSelect').value;
+        if (index === "") return;
+
+        const c = customers[index];
+        document.getElementById('pName').value = c.name || '';
+        document.getElementById('pFurigana').value = c.furigana || '';
+        document.getElementById('pEmail').value = c.email || '';
+        document.getElementById('pInstaId').value = c.instaId === '未設定' ? '' : c.instaId;
+        document.getElementById('pInstaName').value = c.instaName || '';
+        document.getElementById('pFrom').value = c.from || '';
+        document.getElementById('pGender').value = c.gender || '女性';
+        document.getElementById('pMemo').value = c.memo || '';
+    }
+
+    // セミナー一覧＆参加者リストの描画
+    function renderSeminarList() {
+        const seminarListContainer = document.getElementById('seminarListContainer');
+        seminarListContainer.innerHTML = '';
+
+        if (seminars.length === 0) {
+            seminarListContainer.innerHTML = '<p style="text-align:center; color:#999; padding: 20px 0;">まだセミナーが登録されていません。</p>';
+            return;
+        }
+
+        seminars.forEach((seminar, sIndex) => {
+            let participantHtml = '';
+            if (seminar.participants && seminar.participants.length > 0) {
+                seminar.participants.forEach((p, pIndex) => {
+                    const emailDisplay = p.email ? `✉️ <a href="mailto:${p.email}">${p.email}</a><br>` : '';
+                    participantHtml += `
+                        <li class="participant-item">
+                            <div>
+                                <strong>${p.name}</strong> <small>(${p.furigana || 'ふりがななし'})</small> (${p.gender} / 出身: ${p.from})<br>
+                                ${emailDisplay}
+                                IG: <a href="${p.url}" target="_blank">${p.instaName} (@${p.instaId})</a><br>
+                                <small>メモ: ${p.memo || 'なし'}</small>
+                            </div>
+                            <div>
+                                <button class="button btn-sm btn-edit" onclick="editParticipant(${sIndex}, ${pIndex})">編集</button>
+                                <button class="button btn-sm btn-delete" onclick="deleteParticipant(${sIndex}, ${pIndex})">削除</button>
+                            </div>
+                        </li>
+                    `;
+                });
+            } else {
+                participantHtml = '<li class="participant-item" style="color:#888; justify-content:center;">まだ参加者がいません</li>';
+            }
+
+            const seminarDiv = document.createElement('div');
+            seminarDiv.className = 'seminar-item';
+            seminarDiv.innerHTML = `
+                <div class="seminar-header">
+                    <div>
+                        <strong>📌 ${seminar.title}</strong><br>
+                        <span class="tag">${seminar.date} (${seminar.timeSlot})</span>
+                    </div>
+                    <div>
+                        <button class="button btn-sm btn-edit" onclick="editSeminar(${sIndex})">セミナー編集</button>
+                        <button class="button btn-sm btn-delete" onclick="deleteSeminar(${sIndex})">セミナー削除</button>
+                    </div>
+                </div>
+                <p style="margin: 10px 0 5px 0; font-size: 0.9rem; font-weight: bold;">参加者一覧 (${seminar.participants ? seminar.participants.length : 0}名)</p>
+                <ul class="participant-list">${participantHtml}</ul>
+            `;
+            seminarListContainer.appendChild(seminarDiv);
+        });
+    }
+
+    // 顧客の保存・更新
+    function saveCustomer() {
+        const name = document.getElementById('cName').value.trim();
+        if (!name) {
+            alert('お名前を入力してください。');
+            return;
+        }
+
+        const editIndex = document.getElementById('editCustomerIndex').value;
+        const email = document.getElementById('cEmail').value.trim();
+        const instaId = document.getElementById('cInstaId').value.trim();
+
+        const customerData = {
+            name: name,
+            furigana: document.getElementById('cFurigana').value.trim(),
+            email: email,
+            instaId: instaId || '未設定',
+            instaName: document.getElementById('cInstaName').value || instaId || '名前なし',
+            from: document.getElementById('cFrom').value.trim(),
+            gender: document.getElementById('cGender').value,
+            memo: document.getElementById('cMemo').value.trim()
+        };
+
+        if (editIndex === "") {
+            customers.push(customerData);
+            alert('顧客を登録しました！');
+        } else {
+            customers[editIndex] = customerData;
+            alert('顧客情報を更新しました！');
+        }
+
+        resetCustomerForm();
+        saveAndRefresh();
+    }
+
+    function editCustomer(cIndex) {
+        const c = customers[cIndex];
+        document.getElementById('cName').value = c.name;
+        document.getElementById('cFurigana').value = c.furigana || '';
+        document.getElementById('cEmail').value = c.email || '';
+        document.getElementById('cInstaId').value = c.instaId === '未設定' ? '' : c.instaId;
+        document.getElementById('cInstaName').value = c.instaName;
+        document.getElementById('cFrom').value = c.from;
+        document.getElementById('cGender').value = c.gender;
+        document.getElementById('cMemo').value = c.memo;
+        document.getElementById('editCustomerIndex').value = cIndex;
+
+        document.getElementById('customerFormTitle').textContent = '✏️ 顧客情報を編集する';
+        document.getElementById('customerSubmitBtn').textContent = '更新する 💾';
+        document.getElementById('customerCancelBtn').style.display = 'inline-block';
+        
+        const body = document.getElementById('customerFormBody');
+        if (body.style.display !== 'block') {
+            toggleForm('customerFormBody', 'customerToggleIcon');
+        }
+        window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+
+    function resetCustomerForm() {
+        document.getElementById('cName').value = '';
+        document.getElementById('cFurigana').value = '';
+        document.getElementById('cEmail').value = '';
+        document.getElementById('cInstaId').value = '';
+        document.getElementById('cInstaName').value = '';
+        document.getElementById('cFrom').value = '';
+        document.getElementById('cMemo').value = '';
+        document.getElementById('editCustomerIndex').value = '';
+        document.getElementById('customerFormTitle').textContent = '👥 顧客リスト（マスタ登録）';
+        document.getElementById('customerSubmitBtn').textContent = '顧客を登録する 💾';
+        document.getElementById('customerCancelBtn').style.display = 'none';
+    }
+
+    function deleteCustomer(cIndex) {
+        if (confirm(`「${customers[cIndex].name}」さんを顧客リストから削除しますか？（過去のセミナー参加履歴には影響しません）`)) {
+            customers.splice(cIndex, 1);
+            saveAndRefresh();
+        }
+    }
+
+    // エクスポート（ファイル保存：セミナー＋顧客データ）
+    function exportData() {
+        if (seminars.length === 0 && customers.length === 0) {
+            alert('エクスポートするデータがありません。');
+            return;
+        }
+
+        const exportObj = {
+            seminars: seminars,
+            customers: customers
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+        const downloadAnchor = document.createElement('a');
+        
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `seminar_app_data_${today}.json`);
+        
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    // インポート（ファイル読み込み）
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (confirm('現在のデータに上書きしますか？\n「OK」を押すと読み込んだデータに置き換わります。')) {
+                    if (Array.isArray(importedData)) {
+                        seminars = importedData;
+                    } else if (importedData && typeof importedData === 'object') {
+                        seminars = importedData.seminars || [];
+                        customers = importedData.customers || [];
+                    }
+                    saveAndRefresh();
+                    alert('データを正常にインポートしました！');
+                }
+            } catch (error) {
+                alert('JSONファイルの読み込みに失敗しました。ファイルが破損している可能性があります。');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    // セミナーの追加・更新
+    function saveSeminar() {
+        const title = document.getElementById('seminarTitle').value.trim();
+        const date = document.getElementById('seminarDate').value;
+        const timeSlot = document.getElementById('seminarTimeSlot').value;
+        const editIndex = document.getElementById('editSeminarIndex').value;
+
+        if (!title || !date) {
+            alert('セミナー名と日時を入力してください。');
+            return;
+        }
+
+        if (editIndex === "") {
+            seminars.push({
+                title: title,
+                date: date,
+                timeSlot: timeSlot,
+                participants: []
+            });
+            alert('セミナーを登録しました！');
+        } else {
+            seminars[editIndex].title = title;
+            seminars[editIndex].date = date;
+            seminars[editIndex].timeSlot = timeSlot;
+            alert('セミナー情報を更新しました！');
+        }
+
+        resetSeminarForm();
+        toggleForm('seminarFormBody', 'seminarToggleIcon');
+        saveAndRefresh();
+    }
+
+    function editSeminar(sIndex) {
+        const seminar = seminars[sIndex];
+        document.getElementById('seminarTitle').value = seminar.title;
+        document.getElementById('seminarDate').value = seminar.date;
+        document.getElementById('seminarTimeSlot').value = seminar.timeSlot;
+        document.getElementById('editSeminarIndex').value = sIndex;
+
+        document.getElementById('seminarFormTitle').textContent = '✏️ セミナー情報を編集する';
+        document.getElementById('seminarSubmitBtn').textContent = '更新する ✨';
+        document.getElementById('seminarCancelBtn').style.display = 'inline-block';
+        
+        const body = document.getElementById('seminarFormBody');
+        if (body.style.display !== 'block') {
+            toggleForm('seminarFormBody', 'seminarToggleIcon');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetSeminarForm() {
+        document.getElementById('seminarTitle').value = '';
+        document.getElementById('seminarDate').value = '';
+        document.getElementById('editSeminarIndex').value = '';
+        document.getElementById('seminarFormTitle').textContent = '➕ 新しいセミナーを登録する';
+        document.getElementById('seminarSubmitBtn').textContent = 'セミナーを登録する ✨';
+        document.getElementById('seminarCancelBtn').style.display = 'none';
+    }
+
+    function deleteSeminar(sIndex) {
+        if (confirm(`「${seminars[sIndex].title}」を削除しますか？紐づく参加者データもすべて削除されます。`)) {
+            seminars.splice(sIndex, 1);
+            saveAndRefresh();
+        }
+    }
+
+    // 参加者の追加・更新
+    function saveParticipant() {
+        const sIndex = document.getElementById('targetSeminarSelect').value;
+        if (sIndex === "") {
+            alert('登録先のセミナーを選択してください。');
+            return;
+        }
+
+        const name = document.getElementById('pName').value.trim();
+        if (!name) {
+            alert('お名前を入力してください。');
+            return;
+        }
+
+        const editIndex = document.getElementById('editParticipantIndex').value;
+        const email = document.getElementById('pEmail').value.trim();
+        const instaId = document.getElementById('pInstaId').value.trim();
+        const instaUrl = instaId ? `https://instagram.com/${instaId.replace('@', '')}` : '#';
+
+        const participantData = {
+            name: name,
+            furigana: document.getElementById('pFurigana').value.trim(),
+            email: email,
+            instaId: instaId || '未設定',
+            instaName: document.getElementById('pInstaName').value || instaId || '名前なし',
+            url: instaUrl,
+            from: document.getElementById('pFrom').value.trim(),
+            gender: document.getElementById('pGender').value,
+            memo: document.getElementById('pMemo').value.trim()
+        };
+
+        if (editIndex === "") {
+            seminars[sIndex].participants.push(participantData);
+            alert('参加者を登録しました！');
+        } else {
+            seminars[sIndex].participants[editIndex] = participantData;
+            alert('参加者情報を更新しました！');
+        }
+
+        resetParticipantForm();
+        toggleForm('participantFormBody', 'participantToggleIcon');
+        saveAndRefresh();
+    }
+
+    function editParticipant(sIndex, pIndex) {
+        const p = seminars[sIndex].participants[pIndex];
+        document.getElementById('targetSeminarSelect').value = sIndex;
+        document.getElementById('quickCustomerSelect').value = "";
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pFurigana').value = p.furigana || '';
+        document.getElementById('pEmail').value = p.email || '';
+        document.getElementById('pInstaId').value = p.instaId === '未設定' ? '' : p.instaId;
+        document.getElementById('pInstaName').value = p.instaName;
+        document.getElementById('pFrom').value = p.from;
+        document.getElementById('pGender').value = p.gender;
+        document.getElementById('pMemo').value = p.memo;
+        document.getElementById('editParticipantIndex').value = pIndex;
+
+        document.getElementById('participantFormTitle').textContent = '✏️ 参加者情報を編集する';
+        document.getElementById('participantSubmitBtn').textContent = '更新する ✍️';
+        document.getElementById('btnAddToCustomer').style.display = 'inline-block';
+        document.getElementById('participantCancelBtn').style.display = 'inline-block';
+        
+        const body = document.getElementById('participantFormBody');
+        if (body.style.display !== 'block') {
+            toggleForm('participantFormBody', 'participantToggleIcon');
+        }
+        window.scrollTo({ top: 250, behavior: 'smooth' });
+    }
+
+    // 編集中の参加者情報を「顧客リスト」に登録または上書きする機能
+    function addCurrentParticipantToCustomer() {
+        const name = document.getElementById('pName').value.trim();
+        if (!name) {
+            alert('お名前を入力してください。');
+            return;
+        }
+
+        const furigana = document.getElementById('pFurigana').value.trim();
+        const email = document.getElementById('pEmail').value.trim();
+        const instaId = document.getElementById('pInstaId').value.trim();
+        const instaName = document.getElementById('pInstaName').value.trim();
+        const from = document.getElementById('pFrom').value.trim();
+        const gender = document.getElementById('pGender').value;
+        const memo = document.getElementById('pMemo').value.trim();
+
+        const existingIndex = customers.findIndex(c => c.name === name);
+
+        const customerData = {
+            name: name,
+            furigana: furigana,
+            email: email,
+            instaId: instaId || '未設定',
+            instaName: instaName || instaId || '名前なし',
+            from: from,
+            gender: gender,
+            memo: memo
+        };
+
+        if (existingIndex !== -1) {
+            if (confirm(`「${name}」さんはすでに顧客リストに登録されています。現在の内容で上書き更新しますか？`)) {
+                customers[existingIndex] = customerData;
+                alert('顧客リストの情報を更新しました！');
+            }
+        } else {
+            customers.push(customerData);
+            alert(`「${name}」さんを新しく顧客リストに追加しました！✨`);
+        }
+
+        saveAndRefresh();
+    }
+
+    function resetParticipantForm() {
+        document.getElementById('quickCustomerSelect').value = '';
+        document.getElementById('pName').value = '';
+        document.getElementById('pFurigana').value = '';
+        document.getElementById('pEmail').value = '';
+        document.getElementById('pInstaId').value = '';
+        document.getElementById('pInstaName').value = '';
+        document.getElementById('pFrom').value = '';
+        document.getElementById('pMemo').value = '';
+        document.getElementById('editParticipantIndex').value = '';
+        document.getElementById('participantFormTitle').textContent = '➕ 参加者を登録する';
+        document.getElementById('participantSubmitBtn').textContent = '参加者を登録する ✍️';
+        document.getElementById('btnAddToCustomer').style.display = 'none';
+        document.getElementById('participantCancelBtn').style.display = 'none';
+    }
+
+    function deleteParticipant(sIndex, pIndex) {
+        const pName = seminars[sIndex].participants[pIndex].name;
+        if (confirm(`「${pName}」さんを参加者リストから削除しますか？`)) {
+            seminars[sIndex].participants.splice(pIndex, 1);
+            saveAndRefresh();
+        }
+    }
+
+    function saveAndRefresh() {
+        localStorage.setItem('seminars', JSON.stringify(seminars));
+        localStorage.setItem('customers', JSON.stringify(customers));
+        renderApp();
+    }
+
+    // 初回描画
+    renderApp();
+</script>
+
+</body>
+</html>
