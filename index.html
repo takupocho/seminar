@@ -196,7 +196,7 @@
         .participant-list {
             margin-top: 10px;
             padding-left: 0;
-            font-size: 0.95rem; /* リスト内の文字サイズも拡大 */
+            font-size: 0.95rem;
         }
 
         .participant-item {
@@ -438,6 +438,21 @@
             <button id="customerSubmitBtn" onclick="saveCustomer()">顧客を登録する 💾</button>
             <button id="customerCancelBtn" onclick="resetCustomerForm()" style="background-color:#bbb; display:none;">キャンセル</button>
 
+            <!-- 顧客マスタ専用のエクスポート・インポート機能 -->
+            <div class="data-management-box">
+                <div>
+                    <strong>📁 顧客マスタデータのバックアップと復元</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">顧客リストのみをファイルに保存したり、読み込むことができます。</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <button class="btn-export" onclick="exportCustomers()">💾 マスタを保存</button>
+                    <div class="import-wrapper">
+                        <input type="file" id="importCustomerFile" accept=".json" style="display: none;" onchange="importCustomers(event)">
+                        <button class="btn-import" onclick="document.getElementById('importCustomerFile').click()">📂 マスタを読込</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- 登録済み顧客の一覧表示 ＆ 検索機能 -->
             <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
@@ -493,14 +508,14 @@
 
         <div class="data-management-box">
             <div>
-                <strong>📁 データのバックアップと復元</strong>
-                <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">データをファイルに保存したり、別の場所から読み込むことができます。</p>
+                <strong>📁 全体データのバックアップと復元</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">すべてのセミナーと顧客データをまとめて保存・復元できます。</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-export" onclick="exportData()">💾 エクスポート（保存）</button>
+                <button class="btn-export" onclick="exportData()">💾 全体保存</button>
                 <div class="import-wrapper">
                     <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-                    <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 インポート（読込）</button>
+                    <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 全体読込</button>
                 </div>
             </div>
         </div>
@@ -650,7 +665,7 @@
         if (!dateString) return '';
         const dateObj = new Date(dateString.replace(/-/g, '/'));
         if (isNaN(dateObj)) return dateString;
-        const days = ['㈰', '㈪', '㈬', '㈬', '㈭', '㈮', '㈯'];
+        const days = ['㈰', '㈪', '㈫', '㈬', '㈭', '㈮', '㈯'];
         return `${dateString}${days[dateObj.getDay()]}`;
     }
 
@@ -964,7 +979,6 @@
         if (birthdateModes['c'] === 'wareki') toggleBirthdateMode('c');
         document.getElementById('cInstaId').value = '';
         document.getElementById('cInstaName').value = '';
-        document.getElementById('cFrom').value = '0';
         document.getElementById('cFrom').value = '';
         document.getElementById('cMemo').value = '';
         document.getElementById('editCustomerId').value = '';
@@ -982,6 +996,67 @@
         }
     }
 
+    // 顧客マスタ専用のエクスポート
+    function exportCustomers() {
+        if (customers.length === 0) { alert('エクスポートする顧客データがありません。'); return; }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customers, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `customer_master_data_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    // 顧客マスタ専用のインポート
+    function importCustomers(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                const importedCustomers = Array.isArray(imported) ? imported : (imported.customers || []);
+                if (importedCustomers.length === 0) {
+                    alert('有効な顧客データが見つかりませんでした。');
+                    return;
+                }
+                
+                let mode = confirm('既存の顧客データに「追加（マージ）」しますか？\n\n[OK] = 追加する\n[キャンセル] = 既存データをすべて上書きして置き換える');
+                
+                if (mode) {
+                    // 追加（IDが被っていなければ追加、被っていれば更新）
+                    let addedCount = 0;
+                    importedCustomers.forEach(imp => {
+                        if (!imp.id) imp.id = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                        let idx = customers.findIndex(c => c.id === imp.id || (c.name && c.name === imp.name && c.email && c.email === imp.email));
+                        if (idx !== -1) {
+                            customers[idx] = imp; // 既存なら上書き更新
+                        } else {
+                            customers.push(imp);
+                            addedCount++;
+                        }
+                    });
+                    alert(`顧客マスタを統合しました！（新規追加: ${addedCount}件）`);
+                } else {
+                    // 完全置き換え
+                    customers = importedCustomers.map(c => {
+                        if (!c.id) c.id = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                        return c;
+                    });
+                    alert('顧客マスタを置き換えました！');
+                }
+                
+                saveAndRefresh();
+            } catch (error) {
+                alert('JSONファイルの読み込みに失敗しました。');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    // 全体データののエクスポート
     function exportData() {
         if (seminars.length === 0 && customers.length === 0) { alert('エクスポートするデータがありません。'); return; }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ seminars, customers }, null, 2));
@@ -993,6 +1068,7 @@
         downloadAnchor.remove();
     }
 
+    // 全体データのインポート
     function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1000,7 +1076,7 @@
         reader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
-                if (confirm('現在のデータに上書きしますか？')) {
+                if (confirm('現在の全体データに上書きしますか？')) {
                     seminars = importedData.seminars || (Array.isArray(importedData) ? importedData : []);
                     customers = importedData.customers || [];
                     migrateOldData();
