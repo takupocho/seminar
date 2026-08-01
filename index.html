@@ -453,10 +453,19 @@
                 </div>
             </div>
 
-            <!-- 登録済み顧客の一覧表示 ＆ 検索機能 -->
+            <!-- 登録済み顧客の一覧表示 ＆ 検索・並び替え機能 -->
             <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
                     <p style="font-size: 0.95rem; font-weight: bold; margin: 0;">登録済み顧客一覧 (<span id="customerCount">0</span>名)</p>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem;">
+                        <label for="customerSortOrder" style="margin: 0; font-weight: normal;">並び順:</label>
+                        <select id="customerSortOrder" onchange="renderCustomerList()" style="padding: 6px 10px; font-size: 0.9rem; width: auto;">
+                            <option value="furigana">ふりがな順 (昇順)</option>
+                            <option value="furigana_desc">ふりがな順 (降順)</option>
+                            <option value="created_desc">登録順 (新しい順)</option>
+                            <option value="created_asc">登録順 (古い順)</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group" style="margin-bottom: 10px;">
                     <input type="text" id="customerSearchInput" placeholder="🔍 キーワードで検索（名前、ふりがな、メール、参加履歴など）" oninput="renderCustomerList()">
@@ -768,6 +777,7 @@
         const customerListContainer = document.getElementById('customerListContainer');
         const customerCount = document.getElementById('customerCount');
         const searchKeyword = document.getElementById('customerSearchInput')?.value.toLowerCase().trim() || '';
+        const sortOrder = document.getElementById('customerSortOrder')?.value || 'furigana';
         customerListContainer.innerHTML = '';
 
         if (customers.length === 0) {
@@ -776,11 +786,28 @@
             return;
         }
 
-        const filteredCustomers = customers.filter(c => {
+        let filteredCustomers = customers.filter(c => {
             if (!searchKeyword) return true;
             const historyText = getCustomerSeminarHistory(c.id).map(h => `${h.title} ${h.date} ${h.timeSlot} ${h.memo || ''}`).join(' ');
             const targetText = [c.name, c.furigana, c.email, c.birthdate, convertToWareki(c.birthdate), c.instaId, c.instaName, c.from, c.gender, c.memo, historyText].join(' ').toLowerCase();
             return targetText.includes(searchKeyword);
+        });
+
+        // 並び替え処理
+        filteredCustomers.sort((a, b) => {
+            if (sortOrder === 'furigana' || sortOrder === 'furigana_desc') {
+                const keyA = (a.furigana || a.name || '').trim();
+                const keyB = (b.furigana || b.name || '').trim();
+                const comparison = keyA.localeCompare(keyB, 'ja');
+                return sortOrder === 'furigana' ? comparison : -comparison;
+            } else if (sortOrder === 'created_desc') {
+                // IDのタイムスタンプや配列順の逆（新しい順）
+                return b.id.localeCompare(a.id);
+            } else if (sortOrder === 'created_asc') {
+                // 登録順（古い順）
+                return a.id.localeCompare(b.id);
+            }
+            return 0;
         });
 
         if (customerCount) customerCount.textContent = `${filteredCustomers.length} / ${customers.length}`;
@@ -826,7 +853,14 @@
         quickSelect.innerHTML = '<option value="">-- 顧客リストから選択 --</option>';
         if (customers.length === 0) return;
 
-        customers.forEach((c) => {
+        // 参加者追加時のセレクトボックスも、ふりがな順で並び替えて見やすくする
+        let sortedCustomers = [...customers].sort((a, b) => {
+            const keyA = (a.furigana || a.name || '').trim();
+            const keyB = (b.furigana || b.name || '').trim();
+            return keyA.localeCompare(keyB, 'ja');
+        });
+
+        sortedCustomers.forEach((c) => {
             const history = getCustomerSeminarHistory(c.id);
             const targetText = [c.name, c.furigana, c.email, c.birthdate, convertToWareki(c.birthdate), c.instaId, c.instaName, c.from, c.memo, history.map(h => `${h.title} ${h.date}`).join(' ')].join(' ').toLowerCase();
             if (!searchKeyword || targetText.includes(searchKeyword)) {
@@ -996,7 +1030,6 @@
         }
     }
 
-    // 顧客マスタ専用のエクスポート
     function exportCustomers() {
         if (customers.length === 0) { alert('エクスポートする顧客データがありません。'); return; }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(customers, null, 2));
@@ -1008,7 +1041,6 @@
         downloadAnchor.remove();
     }
 
-    // 顧客マスタ専用のインポート
     function importCustomers(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1054,7 +1086,6 @@
         reader.readAsText(file);
     }
 
-    // 全体データののエクスポート
     function exportData() {
         if (seminars.length === 0 && customers.length === 0) { alert('エクスポートするデータがありません。'); return; }
         const exportObj = { seminars: seminars, customers: customers };
@@ -1067,7 +1098,6 @@
         downloadAnchor.remove();
     }
 
-    // 全体データのインポート（修正済）
     function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1076,7 +1106,6 @@
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (confirm('現在の全体データに上書きしますか？')) {
-                    // オブジェクト形式、配列形式どちらのJSONでも安全に取得する
                     if (Array.isArray(importedData)) {
                         seminars = importedData;
                         customers = [];
