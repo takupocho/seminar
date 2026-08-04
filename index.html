@@ -61,10 +61,6 @@
             margin-bottom: 15px;
         }
 
-        .card-header-flex h2 {
-            margin-bottom: 0;
-        }
-
         h2 {
             font-size: 1.15rem;
             margin-top: 0;
@@ -179,6 +175,17 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 15px;
+        }
+
+        .seminar-item.highlighted {
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 0 10px rgba(195, 141, 158, 0.4);
+            animation: pulseHighlight 1.5s ease;
+        }
+
+        @keyframes pulseHighlight {
+            0% { background-color: #f7e6ec; }
+            100% { background-color: #fffdfa; }
         }
 
         .seminar-header {
@@ -304,12 +311,130 @@
         .wareki-inputs input {
             flex: 1;
         }
+
+        /* カレンダー用スタイル */
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .calendar-nav button {
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+        }
+        .calendar-nav h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+        .calendar-weekday {
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            color: #7c6f59;
+        }
+        .calendar-weekday:nth-child(1) { color: #d9534f; } /* 日曜 */
+        .calendar-weekday:nth-child(7) { color: #428bca; } /* 土曜 */
+        
+        .calendar-day {
+            background-color: #fffdfa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            min-height: 75px;
+            padding: 4px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-size: 0.85rem;
+        }
+        .calendar-day.other-month {
+            background-color: #f5f2eb;
+            opacity: 0.5;
+        }
+        .calendar-day-number {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+            color: #5c5346;
+        }
+        .calendar-event-badge {
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .calendar-event-badge:hover {
+            opacity: 0.85;
+            background-color: var(--secondary-color);
+        }
+        .pace-summary-box {
+            background: #f7f5ee;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>📖 セミナー＆参加者ノート</h1>
+
+    <!-- カレンダー管理カード -->
+    <div class="card">
+        <div class="card-header-flex">
+            <h2>📅 セミナー開催カレンダー & ペース確認</h2>
+        </div>
+        
+        <div class="pace-summary-box">
+            <div>
+                <strong>📊 選択中月の開催状況：</strong>
+                <span id="monthlyPaceText" style="font-weight: bold; color: var(--secondary-color);">0回開催</span>
+            </div>
+            <div>
+                <button class="button btn-sm" style="background-color: var(--secondary-color);" onclick="goToCurrentMonth()">今月に戻る</button>
+            </div>
+        </div>
+
+        <div class="calendar-nav">
+            <button onclick="changeMonth(-1)">◀ 前の月</button>
+            <h3 id="calendarMonthTitle">2026年 8月</h3>
+            <button onclick="changeMonth(1)">次の月 ▶</button>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="calendar-weekday">日</div>
+            <div class="calendar-weekday">月</div>
+            <div class="calendar-weekday">火</div>
+            <div class="calendar-weekday">水</div>
+            <div class="calendar-weekday">木</div>
+            <div class="calendar-weekday">金</div>
+            <div class="calendar-weekday">土</div>
+        </div>
+        <div id="calendarDaysGrid" class="calendar-grid" style="margin-top: 4px;"></div>
+    </div>
 
     <!-- セミナー登録カード -->
     <div class="card">
@@ -485,7 +610,7 @@
             <div class="form-group" style="margin-top: 10px; background: #fdfaf3; padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
                 <label style="color: var(--secondary-color); margin-bottom: 8px;">✨ 顧客リストから選んで登録する：</label>
                 <div style="margin-bottom: 8px;">
-                    <input type="text" id="participantCustomerSearch" placeholder="🔍 顧客をキーワード検索して絞り込む..." oninput="updateQuickCustomerSelect()">
+                    <input type="text" id="participantCustomerSearch" placeholder="🔍 顧客をキーワード検索して絞り込む..." onupdate="updateQuickCustomerSelect()">
                 </div>
                 <select id="quickCustomerSelect">
                     <option value="">-- 顧客リストから選択 --</option>
@@ -509,27 +634,47 @@
         </div>
     </div>
 
-    <!-- 登録一覧カード -->
+    <!-- 登録一覧カード（デフォルトで閉じた状態） -->
     <div class="card">
-        <div class="card-header-flex">
-            <h2>📖 セミナー＆参加者ノート一覧</h2>
+        <div class="collapsible-header" onclick="toggleForm('seminarListBody', 'seminarListToggleIcon')">
+            <h2 id="seminarListTitle" style="margin: 0; border: none; padding: 0;">📖 セミナー＆参加者ノート一覧</h2>
+            <span id="seminarListToggleIcon" class="toggle-icon">▶ 開く</span>
         </div>
-
-        <div class="data-management-box">
-            <div>
-                <strong>📁 全体データのバックアップと復元</strong>
-                <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">すべてのセミナーと顧客データをまとめて保存・復元できます。</p>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-export" onclick="exportData()">💾 全体保存</button>
-                <div class="import-wrapper">
-                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-                    <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 全体読込</button>
+        <div id="seminarListBody" class="form-body" style="display: none;">
+            
+            <!-- 一覧用ソートコントロール -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; background: #f7f5ee; padding: 10px 15px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                <span style="font-size: 0.9rem; font-weight: bold;">↕️ 開催日ソート：</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="button btn-sm" id="sortAscBtn" onclick="setSeminarSort('asc')" style="background-color: var(--accent-color);">古い順 (昇順)</button>
+                    <button class="button btn-sm" id="sortDescBtn" onclick="setSeminarSort('desc')" style="background-color: #e3dec3; color: var(--text-color);">新しい順 (降順)</button>
                 </div>
             </div>
-        </div>
 
-        <div id="seminarListContainer" style="margin-top: 20px;"></div>
+            <!-- セミナー名検索・絞り込みコントロール（新規追加） -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; background: #fdfaf3; padding: 10px 15px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                <label for="seminarSearchFilter" style="font-size: 0.9rem; font-weight: bold; margin: 0; color: var(--secondary-color);">🔍 セミナー名で絞り込み：</label>
+                <select id="seminarSearchFilter" onchange="renderSeminarList()" style="padding: 8px 12px; font-size: 0.9rem; max-width: 320px; flex: 1; min-width: 200px;">
+                    <option value="">すべてのセミナーを表示</option>
+                </select>
+            </div>
+
+            <div class="data-management-box">
+                <div>
+                    <strong>📁 全体データのバックアップと復元</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #777;">すべてのセミナーと顧客データをまとめて保存・復元できます。</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <button class="btn-export" onclick="exportData()">💾 全体保存</button>
+                    <div class="import-wrapper">
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                        <button class="btn-import" onclick="document.getElementById('importFile').click()">📂 全体読込</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="seminarListContainer" style="margin-top: 20px;"></div>
+        </div>
     </div>
 </div>
 
@@ -537,6 +682,9 @@
     let seminars = JSON.parse(localStorage.getItem('seminars')) || [];
     let customers = JSON.parse(localStorage.getItem('customers')) || [];
     let birthdateModes = { c: 'seireki' };
+    let seminarSortOrder = 'asc'; // デフォルトは古い順（昇順）
+
+    let currentCalendarDate = new Date();
 
     const eraBaseYears = { '明治': 1868, '大正': 1912, '昭和': 1926, '平成': 1989, '令和': 2019 };
 
@@ -714,13 +862,143 @@
         document.getElementById('customerToggleIcon').textContent = '▶ 開く';
         document.getElementById('participantFormBody').style.display = 'none';
         document.getElementById('participantToggleIcon').textContent = '▶ 開く';
+        document.getElementById('seminarListBody').style.display = 'none';
+        document.getElementById('seminarListToggleIcon').textContent = '▶ 開く';
     });
 
     function renderApp() {
         renderSeminarSelects();
         renderExistingSeminarOptions();
+        renderSeminarSearchFilterOptions(); // 絞り込み用セレクトボックスの更新
         renderCustomerList();
         updateQuickCustomerSelect();
+        renderSeminarList();
+        renderCalendar();
+    }
+
+    function changeMonth(direction) {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+        renderCalendar();
+    }
+
+    function goToCurrentMonth() {
+        currentCalendarDate = new Date();
+        renderCalendar();
+    }
+
+    function renderCalendar() {
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+        
+        document.getElementById('calendarMonthTitle').textContent = `${year}年 ${month + 1}月`;
+
+        const grid = document.getElementById('calendarDaysGrid');
+        grid.innerHTML = '';
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const prevLastDay = new Date(year, month, 0).getDate();
+
+        let monthlySeminarCount = 0;
+
+        for (let i = firstDayIndex - 1; i >= 0; i--) {
+            const dayNum = prevLastDay - i;
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day other-month';
+            cell.innerHTML = `<div class="calendar-day-number">${dayNum}</div>`;
+            grid.appendChild(cell);
+        }
+
+        for (let day = 1; day <= lastDay; day++) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day';
+            
+            const monthStr = String(month + 1).padStart(2, '0');
+            const dayStr = String(day).padStart(2, '0');
+            const dateString = `${year}-${monthStr}-${dayStr}`;
+
+            cell.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+
+            seminars.forEach((s, originalIndex) => {
+                if (s.date === dateString) {
+                    monthlySeminarCount++;
+                    const badge = document.createElement('div');
+                    badge.className = 'calendar-event-badge';
+                    badge.textContent = `${s.title} (${s.timeSlot.includes('AM') ? 'AM' : s.timeSlot.includes('PM') ? 'PM' : '終'})`;
+                    badge.title = `${s.title} (${s.timeSlot}) - クリックして詳細を表示`;
+                    badge.onclick = () => jumpToSeminar(originalIndex);
+                    cell.appendChild(badge);
+                }
+            });
+
+            grid.appendChild(cell);
+        }
+
+        const totalCellsSoFar = firstDayIndex + lastDay;
+        const totalGridCells = totalCellsSoFar <= 35 ? 35 : 42;
+        const nextDaysCount = totalGridCells - totalCellsSoFar;
+
+        for (let day = 1; day <= nextDaysCount; day++) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day other-month';
+            cell.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+            grid.appendChild(cell);
+        }
+
+        const paceText = document.getElementById('monthlyPaceText');
+        let paceComment = '';
+        if (monthlySeminarCount === 0) {
+            paceComment = '（開催予定なし）';
+        } else if (monthlySeminarCount <= 2) {
+            paceComment = '（ゆったりペース 🌱）';
+        } else if (monthlySeminarCount <= 5) {
+            paceComment = '（定期的な開催ペース ✨）';
+        } else {
+            paceComment = '（ハイペースでの開催 🔥）';
+        }
+        paceText.textContent = `${monthlySeminarCount}回開催 ${paceComment}`;
+    }
+
+    function jumpToSeminar(targetOriginalIndex) {
+        const listBody = document.getElementById('seminarListBody');
+        const listIcon = document.getElementById('seminarListToggleIcon');
+        if (listBody.style.display !== 'block') {
+            listBody.style.display = 'block';
+            listIcon.textContent = '▼ 閉じる';
+        }
+
+        // カレンダーからジャンプする際はフィルターを「すべて」に戻す
+        const searchFilter = document.getElementById('seminarSearchFilter');
+        if (searchFilter) searchFilter.value = "";
+        renderSeminarList();
+
+        setTimeout(() => {
+            const targetEl = document.getElementById(`seminar-card-${targetOriginalIndex}`);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.add('highlighted');
+                setTimeout(() => {
+                    targetEl.classList.remove('highlighted');
+                }, 1800);
+            }
+        }, 50);
+    }
+
+    function setSeminarSort(order) {
+        seminarSortOrder = order;
+        const ascBtn = document.getElementById('sortAscBtn');
+        const descBtn = document.getElementById('sortDescBtn');
+        if (order === 'asc') {
+            ascBtn.style.backgroundColor = 'var(--accent-color)';
+            ascBtn.style.color = '#fff';
+            descBtn.style.backgroundColor = '#e3dec3';
+            descBtn.style.color = 'var(--text-color)';
+        } else {
+            descBtn.style.backgroundColor = 'var(--accent-color)';
+            descBtn.style.color = '#fff';
+            ascBtn.style.backgroundColor = '#e3dec3';
+            ascBtn.style.color = 'var(--text-color)';
+        }
         renderSeminarList();
     }
 
@@ -733,6 +1011,21 @@
             option.textContent = title;
             select.appendChild(option);
         });
+    }
+
+    // 一覧画面の検索用セレクトボックスの選択肢を動的に生成する関数
+    function renderSeminarSearchFilterOptions() {
+        const select = document.getElementById('seminarSearchFilter');
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">すべてのセミナーを表示</option>';
+        [...new Set(seminars.map(s => s.title))].filter(Boolean).forEach(title => {
+            const option = document.createElement('option');
+            option.value = title;
+            option.textContent = title;
+            select.appendChild(option);
+        });
+        select.value = currentVal;
     }
 
     function fillSeminarTitleFromSelect() {
@@ -748,7 +1041,7 @@
             return;
         }
         seminars.map((seminar, originalIndex) => ({ seminar, originalIndex })).sort((a, b) => {
-            if (a.seminar.date !== b.seminar.date) return b.seminar.date.localeCompare(a.seminar.date);
+            if (a.seminar.date !== b.seminar.date) return b.seminar.date.localeCompare(b.seminar.date);
             return getTimeSlotWeight(a.seminar.timeSlot) - getTimeSlotWeight(b.seminar.timeSlot);
         }).forEach(({ seminar, originalIndex }) => {
             const option = document.createElement('option');
@@ -793,7 +1086,6 @@
             return targetText.includes(searchKeyword);
         });
 
-        // 並び替え処理
         filteredCustomers.sort((a, b) => {
             if (sortOrder === 'furigana' || sortOrder === 'furigana_desc') {
                 const keyA = (a.furigana || a.name || '').trim();
@@ -801,10 +1093,8 @@
                 const comparison = keyA.localeCompare(keyB, 'ja');
                 return sortOrder === 'furigana' ? comparison : -comparison;
             } else if (sortOrder === 'created_desc') {
-                // IDのタイムスタンプや配列順の逆（新しい順）
                 return b.id.localeCompare(a.id);
             } else if (sortOrder === 'created_asc') {
-                // 登録順（古い順）
                 return a.id.localeCompare(b.id);
             }
             return 0;
@@ -853,7 +1143,6 @@
         quickSelect.innerHTML = '<option value="">-- 顧客リストから選択 --</option>';
         if (customers.length === 0) return;
 
-        // 参加者追加時のセレクトボックスも、ふりがな順で並び替えて見やすくする
         let sortedCustomers = [...customers].sort((a, b) => {
             const keyA = (a.furigana || a.name || '').trim();
             const keyB = (b.furigana || b.name || '').trim();
@@ -881,8 +1170,26 @@
             return;
         }
 
-        seminars.map((seminar, originalIndex) => ({ seminar, originalIndex })).sort((a, b) => {
-            if (a.seminar.date !== b.seminar.date) return b.seminar.date.localeCompare(b.seminar.date);
+        // 検索フィルターで選択されたセミナー名を取得
+        const selectedFilterTitle = document.getElementById('seminarSearchFilter')?.value || '';
+
+        // 絞り込み条件に一致するセミナーを抽出
+        let filteredSeminars = seminars.map((seminar, originalIndex) => ({ seminar, originalIndex })).filter(({ seminar }) => {
+            if (!selectedFilterTitle) return true;
+            return seminar.title === selectedFilterTitle;
+        });
+
+        if (filteredSeminars.length === 0) {
+            seminarListContainer.innerHTML = '<p style="text-align:center; color:#999; padding: 20px 0;">一致するセミナーが見つかりませんでした。</p>';
+            return;
+        }
+
+        // ソート適用（昇順：古い日付順、降順：新しい日付順）
+        filteredSeminars.sort((a, b) => {
+            const dateCmp = a.seminar.date.localeCompare(b.seminar.date);
+            if (dateCmp !== 0) {
+                return seminarSortOrder === 'asc' ? dateCmp : -dateCmp;
+            }
             return getTimeSlotWeight(a.seminar.timeSlot) - getTimeSlotWeight(b.seminar.timeSlot);
         }).forEach(({ seminar, originalIndex: sIndex }) => {
             let participantHtml = '';
@@ -926,6 +1233,7 @@
 
             const seminarDiv = document.createElement('div');
             seminarDiv.className = 'seminar-item';
+            seminarDiv.id = `seminar-card-${sIndex}`;
             seminarDiv.innerHTML = `
                 <div class="seminar-header">
                     <div>
